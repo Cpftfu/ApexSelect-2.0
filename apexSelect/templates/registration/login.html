@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Вход - ApexSelect{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <h2 class="text-center mb-4">Вход в систему</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="id_username" class="form-label">
+                Имя пользователя или Email
+            </label>
+            <input type="text"
+                   name="username"
+                   id="id_username"
+                   class="form-control"
+                   placeholder="Введите имя пользователя или email"
+                   required>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_password" class="form-label">
+                Пароль
+            </label>
+            <input type="password"
+                   name="password"
+                   id="id_password"
+                   class="form-control"
+                   placeholder="Введите пароль"
+                   required>
+        </div>
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                Неверное имя пользователя или пароль.
+            </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary w-100 mb-3">Войти</button>
+
+        <div class="text-center">
+            <p>Еще нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+        </div>
+    </form>
+</div>
+{% endblock %}
