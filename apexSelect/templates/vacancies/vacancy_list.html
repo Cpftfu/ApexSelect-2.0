@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% block title %}Управление вакансиями - ApexSelect{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <i class="bi bi-briefcase"></i> ApexSelect
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-item nav-link" href="{% url 'home' %}">
+                <i class="bi bi-house"></i> На главную
+            </a>
+            <a class="btn btn-primary btn-sm ms-2" href="{% url 'add_vacancy' %}">
+                <i class="bi bi-plus-circle"></i> Добавить вакансию
+            </a>
+            <span class="nav-item nav-link">
+                <i class="bi bi-person-circle"></i> {{ user.username }}
+            </span>
+            <a class="nav-item nav-link" href="{% url 'logout' %}">
+                <i class="bi bi-box-arrow-right"></i> Выйти
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-list-task"></i> Управление вакансиями</h1>
+                <div class="btn-group">
+                    <a href="{% url 'add_vacancy' %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Новая вакансия
+                    </a>
+                </div>
+            </div>
+
+            <!-- Поиск и фильтры -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" name="q" class="form-control"
+                                       placeholder="Поиск по названию, компании или технологиям..."
+                                       value="{{ request.GET.q|default:'' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select name="status" class="form-select">
+                                <option value="">Все статусы</option>
+                                <option value="draft" {% if request.GET.status == 'draft' %}selected{% endif %}>
+                                    Черновики
+                                </option>
+                                <option value="published" {% if request.GET.status == 'published' %}selected{% endif %}>
+                                    Опубликованные
+                                </option>
+                                <option value="closed" {% if request.GET.status == 'closed' %}selected{% endif %}>
+                                    Закрытые
+                                </option>
+                                <option value="archived" {% if request.GET.status == 'archived' %}selected{% endif %}>
+                                    Архив
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-funnel"></i> Применить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Список вакансий -->
+            {% if vacancies %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Название</th>
+                                <th>Компания</th>
+                                <th>Статус</th>
+                                <th>Тип</th>
+                                <th>Зарплата</th>
+                                <th>Дата</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vacancy in vacancies %}
+                                <tr {% if vacancy.is_featured %}class="table-warning"{% endif %}>
+                                    <td>
+                                        <strong>{{ vacancy.title|truncatechars:30 }}</strong>
+                                        {% if vacancy.is_featured %}
+                                            <i class="bi bi-star-fill text-warning" title="Рекомендуемая"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ vacancy.company|truncatechars:20 }}</td>
+                                    <td>
+                                        {% if vacancy.status == 'draft' %}
+                                            <span class="badge bg-secondary">{{ vacancy.get_status_display }}</span>
+                                        {% elif vacancy.status == 'published' %}
+                                            <span class="badge bg-success">{{ vacancy.get_status_display }}</span>
+                                        {% elif vacancy.status == 'closed' %}
+                                            <span class="badge bg-warning">{{ vacancy.get_status_display }}</span>
+                                        {% elif vacancy.status == 'archived' %}
+                                            <span class="badge bg-dark">{{ vacancy.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ vacancy.get_employment_type_display }}</td>
+                                    <td>{{ vacancy.get_salary_display }}</td>
+                                    <td>{{ vacancy.created_at|date:"d.m.Y" }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{% url 'vacancy_detail' vacancy.pk %}"
+                                               class="btn btn-outline-info"
+                                               title="Просмотр"
+                                               data-bs-toggle="tooltip">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'edit_vacancy' vacancy.pk %}"
+                                               class="btn btn-outline-warning"
+                                               title="Редактировать"
+                                               data-bs-toggle="tooltip">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button class="btn btn-outline-secondary toggle-status"
+                                                    data-vacancy-id="{{ vacancy.pk }}"
+                                                    data-current-status="{{ vacancy.status }}"
+                                                    title="Изменить статус"
+                                                    data-bs-toggle="tooltip">
+                                                {% if vacancy.status == 'published' %}
+                                                    <i class="bi bi-file-earmark-text"></i>
+                                                {% else %}
+                                                    <i class="bi bi-file-earmark"></i>
+                                                {% endif %}
+                                            </button>
+                                            <a href="{% url 'delete_vacancy' vacancy.pk %}"
+                                               class="btn btn-outline-danger"
+                                               title="Удалить"
+                                               data-bs-toggle="tooltip">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Статистика -->
+                <div class="alert alert-info mt-4">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <strong>Всего:</strong> {{ total }}
+                        </div>
+                        <div class="col-md-2">
+                            <span class="badge bg-secondary">Черновики: {{ draft_count }}</span>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="badge bg-success">Опубликовано: {{ published_count }}</span>
+                        </div>
+                        <div class="col-md-2">
+                            <span class="badge bg-warning">Закрыто: {{ closed_count }}</span>
+                        </div>
+                        <div class="col-md-2">
+                            <span class="badge bg-dark">Архив: {{ archived_count }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Вакансий не найдено.
+                    <a href="{% url 'add_vacancy' %}" class="alert-link">Создайте первую вакансию!</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Активируем tooltips
+    $('[data-bs-toggle="tooltip"]').tooltip();
+
+    // Обработка изменения статуса
+    $('.toggle-status').click(function() {
+        const vacancyId = $(this).data('vacancy-id');
+        const csrfToken = $('[name=csrfmiddlewaretoken]').val();
+        const button = $(this);
+
+        if (!confirm('Изменить статус вакансии?')) return;
+
+        $.ajax({
+            url: `/vacancies/${vacancyId}/toggle-status/`,
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            },
+            success: function(data) {
+                if (data.success) {
+                    // Обновляем бейдж
+                    const statusBadge = button.closest('tr').find('td:nth-child(3) .badge');
+                    statusBadge.text(data.new_status_display);
+
+                    // Обновляем цвет бейджа
+                    const statusColors = {
+                        'draft': 'secondary',
+                        'published': 'success',
+                        'closed': 'warning',
+                        'archived': 'dark'
+                    };
+                    statusBadge.removeClass('bg-secondary bg-success bg-warning bg-dark')
+                               .addClass('bg-' + statusColors[data.new_status]);
+
+                    // Меняем иконку
+                    const icon = button.find('i');
+                    if (data.new_status === 'published') {
+                        icon.removeClass('bi-file-earmark').addClass('bi-file-earmark-text');
+                    } else {
+                        icon.removeClass('bi-file-earmark-text').addClass('bi-file-earmark');
+                    }
+
+                    button.data('current-status', data.new_status);
+
+                    // Показываем уведомление
+                    const alert = $(`
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle"></i>
+                            Статус изменен на "${data.new_status_display}"
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    `);
+                    $('.container').prepend(alert);
+                    setTimeout(() => alert.alert('close'), 3000);
+                }
+            },
+            error: function() {
+                alert('Ошибка при изменении статуса');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

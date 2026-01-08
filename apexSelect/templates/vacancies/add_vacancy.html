@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}{{ title }} - ApexSelect{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <i class="bi bi-briefcase"></i> ApexSelect
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-item nav-link" href="{% url 'vacancy_list' %}">
+                <i class="bi bi-arrow-left"></i> К списку вакансий
+            </a>
+            <span class="nav-item nav-link">
+                <i class="bi bi-person-circle"></i> {{ user.username }}
+            </span>
+            <a class="nav-item nav-link" href="{% url 'logout' %}">
+                <i class="bi bi-box-arrow-right"></i> Выйти
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">
+                        <i class="bi bi-file-earmark-plus"></i> {{ title }}
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="vacancyForm">
+                        {% csrf_token %}
+
+                        <!-- Основная информация -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Основная информация</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        {{ form.title|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.company|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        {{ form.location|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.status|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Описание -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="bi bi-card-text"></i> Описание вакансии</h5>
+                            </div>
+                            <div class="card-body">
+                                {{ form.short_description|as_crispy_field }}
+                                {{ form.full_description|as_crispy_field }}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        {{ form.requirements|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.responsibilities|as_crispy_field }}
+                                    </div>
+                                </div>
+                                {{ form.benefits|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <!-- Детали -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="bi bi-gear"></i> Детали вакансии</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        {{ form.salary_min|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {{ form.salary_max|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {{ form.currency|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {{ form.technologies|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        {{ form.employment_type|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.experience|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        {{ form.expires_at|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Дополнительные опции -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="bi bi-sliders"></i> Дополнительные опции</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        {{ form.is_featured|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{ form.is_remote|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{ form.is_relocation|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Кнопки -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'vacancy_list' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Отмена
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                {% if vacancy %}
+                                    <i class="bi bi-check-circle"></i> Обновить вакансию
+                                {% else %}
+                                    <i class="bi bi-plus-circle"></i> Создать вакансию
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Подсказки -->
+            <div class="alert alert-info mt-4">
+                <h5><i class="bi bi-lightbulb"></i> Подсказки:</h5>
+                <ul class="mb-0">
+                    <li>Поля помеченные * являются обязательными</li>
+                    <li>Используйте подробное описание для привлечения кандидатов</li>
+                    <li>Указывайте реальные требования к кандидатам</li>
+                    <li>Технологии указывайте через запятую (Python, Django, PostgreSQL)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Стили для чекбоксов */
+.form-check-input {
+    margin-top: 0.3em;
+}
+
+/* Стили для textarea */
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Стили для обязательных полей */
+.asteriskField {
+    color: #dc3545;
+}
+
+/* Стили для карточек */
+.card {
+    border: 1px solid #e0e0e0;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+}
+</style>
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Автозаполнение зарплаты до при вводе зарплаты от
+    $('#id_salary_min').on('input', function() {
+        const minValue = $(this).val();
+        const maxField = $('#id_salary_max');
+        if (minValue && !maxField.val()) {
+            maxField.val(parseInt(minValue) * 2);
+        }
+    });
+
+    // Форматирование даты для поля expires_at
+    const expiresField = $('#id_expires_at');
+    if (!expiresField.val()) {
+        // Устанавливаем дату на 30 дней вперед по умолчанию
+        const today = new Date();
+        today.setDate(today.getDate() + 30);
+        const formattedDate = today.toISOString().slice(0, 16);
+        expiresField.val(formattedDate);
+    }
+
+    // Подсветка обязательных полей
+    $('.requiredField').addClass('required-field');
+});
+</script>
+{% endblock %}
+{% endblock %}

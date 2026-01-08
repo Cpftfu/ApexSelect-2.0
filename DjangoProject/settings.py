@@ -38,8 +38,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apexSelect'
+    # Третьи стороны
+    'crispy_forms',
+    'crispy_bootstrap5',
+    # Ваше приложение
+    'apexSelect',
 ]
+
+# Настройки crispy forms
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -135,4 +143,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Настройки для загрузки изображений
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 FILE_UPLOAD_PERMISSIONS = 0o644
+
 

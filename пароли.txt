@@ -1,0 +1,3 @@
+для суперпользователя: admin - admin123
+кондидат: user - rat5fYrI
+менеджер: manager - manager123456789

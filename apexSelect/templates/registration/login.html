@@ -1,48 +1,40 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 {% block title %}Вход - ApexSelect{% endblock %}
 
 {% block content %}
-<div class="auth-container">
-    <h2 class="text-center mb-4">Вход в систему</h2>
+<div class="container">
+    <div class="row justify-content-center align-items-center min-vh-75">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="mb-0">
+                        <i class="bi bi-box-arrow-in-right"></i> Вход в систему
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
 
-    <form method="post">
-        {% csrf_token %}
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right"></i> Войти
+                            </button>
+                        </div>
 
-        <div class="mb-3">
-            <label for="id_username" class="form-label">
-                Имя пользователя или Email
-            </label>
-            <input type="text"
-                   name="username"
-                   id="id_username"
-                   class="form-control"
-                   placeholder="Введите имя пользователя или email"
-                   required>
-        </div>
-
-        <div class="mb-3">
-            <label for="id_password" class="form-label">
-                Пароль
-            </label>
-            <input type="password"
-                   name="password"
-                   id="id_password"
-                   class="form-control"
-                   placeholder="Введите пароль"
-                   required>
-        </div>
-
-        {% if form.errors %}
-            <div class="alert alert-danger">
-                Неверное имя пользователя или пароль.
+                        <div class="text-center mt-3">
+                            <p class="mb-0">
+                                Еще нет аккаунта?
+                                <a href="{% url 'register' %}" class="text-decoration-none">
+                                    Зарегистрироваться
+                                </a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
             </div>
-        {% endif %}
-
-        <button type="submit" class="btn btn-primary w-100 mb-3">Войти</button>
-
-        <div class="text-center">
-            <p>Еще нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
         </div>
-    </form>
+    </div>
 </div>
 {% endblock %}

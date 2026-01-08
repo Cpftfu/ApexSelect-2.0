@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Удаление вакансии - ApexSelect{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <i class="bi bi-briefcase"></i> ApexSelect
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-item nav-link" href="{% url 'vacancy_list' %}">
+                <i class="bi bi-arrow-left"></i> К списку вакансий
+            </a>
+            <span class="nav-item nav-link">
+                <i class="bi bi-person-circle"></i> {{ user.username }}
+            </span>
+            <a class="nav-item nav-link" href="{% url 'logout' %}">
+                <i class="bi bi-box-arrow-right"></i> Выйти
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> Подтверждение удаления
+                    </h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="alert alert-warning mb-4">
+                        <h4 class="alert-heading">⚠️ Внимание!</h4>
+                        <p>Вы собираетесь удалить вакансию:</p>
+                        <h5 class="text-danger my-3">
+                            <i class="bi bi-file-earmark-text"></i> "{{ vacancy.title }}"
+                        </h5>
+                        <p class="mb-0">
+                            <i class="bi bi-building"></i> {{ vacancy.company }}
+                        </p>
+                    </div>
+
+                    <div class="alert alert-danger">
+                        <i class="bi bi-x-circle"></i>
+                        <strong>Это действие нельзя отменить!</strong><br>
+                        Все данные вакансии будут удалены безвозвратно.
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-center gap-3 mt-4">
+                            <a href="{% url 'vacancy_list' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Отмена
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Да, удалить вакансию
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
