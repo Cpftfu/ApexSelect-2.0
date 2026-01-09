@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Удаление отклика - ApexSelect{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Подтверждение удаления</h5>
+                </div>
+                <div class="card-body">
+                    <p>Вы уверены, что хотите удалить отклик на вакансию:</p>
+                    <div class="alert alert-info">
+                        <h6>{{ response.vacancy.title }}</h6>
+                        <p class="mb-1">Компания: {{ response.vacancy.company }}</p>
+                        <p class="mb-1">Статус: {{ response.get_status_display }}</p>
+                        <p class="mb-0">Дата отклика: {{ response.created_at|date:"d.m.Y H:i" }}</p>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash me-1"></i>Да, удалить отклик
+                            </button>
+                            <a href="{% url 'my_responses' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Отмена
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

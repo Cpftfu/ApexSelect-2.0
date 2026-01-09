@@ -1,108 +1,115 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block title %}Главная - ApexSelect{% endblock %}
 
 {% block content %}
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
-    <div class="container">
-        <a class="navbar-brand" href="{% url 'home' %}">
-            <i class="bi bi-briefcase"></i> ApexSelect
-        </a>
-        <div class="navbar-nav ms-auto">
-            <span class="nav-item nav-link">
-                <i class="bi bi-person-circle"></i> {{ user.username }}
-            </span>
-            {% if is_admin %}
-                <a class="nav-item nav-link" href="{% url 'vacancy_list' %}">
-                    <i class="bi bi-list-task"></i> Управление вакансиями
-                </a>
-                <a class="btn btn-primary btn-sm ms-2" href="{% url 'add_vacancy' %}">
-                    <i class="bi bi-plus-circle"></i> Добавить вакансию
-                </a>
-            {% endif %}
-            <a class="nav-item nav-link" href="{% url 'logout' %}">
-                <i class="bi bi-box-arrow-right"></i> Выйти
-            </a>
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-5 fw-bold mb-3">
+                <i class="bi bi-building text-primary me-3"></i>
+                Добро пожаловать в ApexSelect!
+            </h1>
+            <p class="lead text-muted">
+                Находите лучшие вакансии или размещайте свои предложения на нашем портале.
+            </p>
         </div>
     </div>
-</nav>
 
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <h2 class="mb-4">
-                {% if is_admin %}
-                    <i class="bi bi-briefcase"></i> Все вакансии
-                {% else %}
-                    <i class="bi bi-search"></i> Доступные вакансии
+    <!-- Вакансии -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4">Доступные вакансии</h2>
+                {% if user.is_staff or user.is_superuser %}
+                <a href="{% url 'vacancy_list' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-plus-circle me-1"></i>Управление вакансиями
+                </a>
                 {% endif %}
-            </h2>
+            </div>
 
             {% if vacancies %}
-                <div class="row">
-                    {% for vacancy in vacancies %}
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card vacancy-card {% if vacancy.is_featured %}border-warning border-2{% endif %}">
-                                <div class="card-header">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title mb-0">{{ vacancy.title|truncatechars:30 }}</h5>
-                                        {% if vacancy.is_featured %}
-                                            <span class="badge bg-warning"><i class="bi bi-star-fill"></i></span>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <h6 class="card-subtitle mb-2 text-muted">
-                                        <i class="bi bi-building"></i> {{ vacancy.company }}
-                                    </h6>
-                                    <p class="card-text text-muted">
-                                        <i class="bi bi-geo-alt"></i> {{ vacancy.location }}
-                                        {% if vacancy.is_remote %}
-                                            <span class="badge bg-info ms-2"><i class="bi bi-laptop"></i> Удалённо</span>
-                                        {% endif %}
-                                    </p>
-
-                                    <p class="card-text">{{ vacancy.short_description|truncatechars:120 }}</p>
-
-                                    <div class="mb-3">
-                                        <span class="badge bg-primary">{{ vacancy.get_employment_type_display }}</span>
-                                        <span class="badge bg-secondary">{{ vacancy.get_experience_display }}</span>
-                                        {% if vacancy.technologies %}
-                                            <span class="badge bg-light text-dark">{{ vacancy.technologies|truncatechars:20 }}</span>
-                                        {% endif %}
-                                    </div>
-
-                                    {% if vacancy.get_salary_display != 'По договоренности' %}
-                                        <p class="fw-bold text-success">
-                                            <i class="bi bi-cash"></i> {{ vacancy.get_salary_display }}
-                                        </p>
+            <div class="row">
+                {% for vacancy in vacancies %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 vacancy-card">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="badge bg-success">Опубликовано</span>
+                                    {% if vacancy.is_featured %}
+                                    <span class="badge bg-warning ms-1">Рекомендуемая</span>
                                     {% endif %}
                                 </div>
-                                <div class="card-footer bg-transparent">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">
-                                            <i class="bi bi-calendar"></i> {{ vacancy.created_at|date:"d.m.Y" }}
-                                        </small>
-                                        <a href="{% url 'vacancy_detail' vacancy.pk %}" class="btn btn-sm btn-outline-primary">
-                                            Подробнее <i class="bi bi-arrow-right"></i>
-                                        </a>
-                                    </div>
+                                <small class="text-muted">{{ vacancy.created_at|date:"d.m.Y" }}</small>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{% url 'vacancy_detail' vacancy.id %}" class="text-decoration-none">
+                                    {{ vacancy.title }}
+                                </a>
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <i class="bi bi-building me-1"></i>{{ vacancy.company }}
+                            </h6>
+                            <p class="card-text">{{ vacancy.short_description|truncatechars:120 }}</p>
+
+                            <div class="mb-3">
+                                <span class="badge bg-info">{{ vacancy.get_employment_type_display }}</span>
+                                <span class="badge bg-secondary">{{ vacancy.get_experience_display }}</span>
+                                {% if vacancy.is_remote %}
+                                <span class="badge bg-primary">Удалённая работа</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong class="text-primary">{{ vacancy.get_salary_display }}</strong>
+                                </div>
+                                <div>
+                                    <i class="bi bi-geo-alt me-1"></i>{{ vacancy.location }}
                                 </div>
                             </div>
                         </div>
-                    {% endfor %}
+                        <div class="card-footer bg-transparent">
+                            <a href="{% url 'vacancy_detail' vacancy.id %}" class="btn btn-primary w-100">
+                                <i class="bi bi-eye me-1"></i>Подробнее
+                            </a>
+                        </div>
+                    </div>
                 </div>
+                {% endfor %}
+            </div>
             {% else %}
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i>
-                    {% if is_admin %}
-                        У вас ещё нет вакансий.
-                        <a href="{% url 'add_vacancy' %}" class="alert-link">Создайте первую!</a>
-                    {% else %}
-                        На данный момент нет доступных вакансий.
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-briefcase display-1 text-muted mb-3"></i>
+                    <h4 class="text-muted mb-3">Нет доступных вакансий</h4>
+                    <p class="text-muted mb-4">
+                        В данный момент нет опубликованных вакансий.
+                    </p>
+                    {% if user.is_staff or user.is_superuser %}
+                    <a href="{% url 'add_vacancy' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Добавить первую вакансию
+                    </a>
                     {% endif %}
                 </div>
+            </div>
             {% endif %}
         </div>
     </div>
 </div>
+
+<style>
+    .vacancy-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .vacancy-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+</style>
 {% endblock %}

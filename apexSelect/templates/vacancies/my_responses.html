@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Мои отклики - ApexSelect{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="bi bi-envelope-paper me-2"></i>Мои отклики
+                </h1>
+                <div>
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left me-1"></i>Назад к вакансиям
+                    </a>
+                </div>
+            </div>
+
+            <!-- Статистика откликов -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Статистика откликов</h5>
+                            <div class="row text-center">
+                                <div class="col">
+                                    <div class="border rounded p-3 bg-light">
+                                        <h3 class="text-primary">{{ total_count }}</h3>
+                                        <small class="text-muted">Всего откликов</small>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="border rounded p-3 bg-warning bg-opacity-10">
+                                        <h3 class="text-warning">{{ pending_count }}</h3>
+                                        <small class="text-muted">На рассмотрении</small>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="border rounded p-3 bg-info bg-opacity-10">
+                                        <h3 class="text-info">{{ viewed_count }}</h3>
+                                        <small class="text-muted">Просмотрено</small>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="border rounded p-3 bg-success bg-opacity-10">
+                                        <h3 class="text-success">{{ invited_count }}</h3>
+                                        <small class="text-muted">Приглашения</small>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="border rounded p-3 bg-danger bg-opacity-10">
+                                        <h3 class="text-danger">{{ rejected_count }}</h3>
+                                        <small class="text-muted">Отказы</small>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="border rounded p-3 bg-success bg-opacity-25">
+                                        <h3 class="text-success">{{ accepted_count }}</h3>
+                                        <small class="text-muted">Принято</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Список вакансий с откликами -->
+            {% if vacancies_with_responses %}
+                <div class="row">
+                    {% for item in vacancies_with_responses %}
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge bg-{{ item.status_color }} me-2">
+                                        {{ item.status_display }}
+                                    </span>
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar me-1"></i>
+                                        {{ item.created_at|date:"d.m.Y" }}
+                                    </small>
+                                </div>
+                                <div>
+                                    <a href="{% url 'vacancy_detail' item.vacancy.id %}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal{{ item.response_id }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="{% url 'vacancy_detail' item.vacancy.id %}"
+                                       class="text-decoration-none text-dark">
+                                        {{ item.vacancy.title }}
+                                    </a>
+                                    {% if item.vacancy.is_featured %}
+                                        <span class="badge bg-warning ms-1">Рекомендуемая</span>
+                                    {% endif %}
+                                </h5>
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <i class="bi bi-building me-1"></i>{{ item.vacancy.company }}
+                                </h6>
+                                <p class="card-text">{{ item.vacancy.short_description|truncatechars:150 }}</p>
+
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <small class="text-muted">
+                                            <i class="bi bi-geo-alt me-1"></i>
+                                            {{ item.vacancy.location }}
+                                        </small>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <span class="badge bg-info">
+                                            {{ item.vacancy.get_employment_type_display }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong class="text-primary">
+                                            {{ item.vacancy.get_salary_display }}
+                                        </strong>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-secondary">
+                                            {{ item.vacancy.get_experience_display }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Сопроводительное письмо (сворачиваемое) -->
+                                {% if item.cover_letter %}
+                                <div class="mt-3">
+                                    <a class="btn btn-sm btn-outline-secondary w-100"
+                                       data-bs-toggle="collapse"
+                                       href="#coverLetter{{ item.response_id }}"
+                                       role="button">
+                                        <i class="bi bi-chat-text me-1"></i>
+                                        Показать сопроводительное письмо
+                                    </a>
+                                    <div class="collapse mt-2" id="coverLetter{{ item.response_id }}">
+                                        <div class="card card-body bg-light">
+                                            {{ item.cover_letter|linebreaks }}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Модальное окно удаления отклика -->
+                    <div class="modal fade" id="deleteModal{{ item.response_id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>
+                                        Удаление отклика
+                                    </h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Вы уверены, что хотите удалить отклик на вакансию:</p>
+                                    <div class="alert alert-info">
+                                        <h6 class="mb-1">{{ item.vacancy.title }}</h6>
+                                        <p class="mb-1 small">{{ item.vacancy.company }}</p>
+                                        <p class="mb-0 small">Статус: {{ item.status_display }}</p>
+                                    </div>
+                                    <p class="text-muted small">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        После удаления вы сможете отправить новый отклик на эту вакансию.
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <form method="post" action="{% url 'delete_response' item.response_id %}">
+                                        {% csrf_token %}
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            Отмена
+                                        </button>
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-trash me-1"></i>Удалить отклик
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="bi bi-envelope-x display-1 text-muted mb-3"></i>
+                        <h4 class="text-muted mb-3">У вас пока нет откликов на вакансии</h4>
+                        <p class="text-muted mb-4">
+                            Найдите интересные вакансии и отправьте свой первый отклик!
+                        </p>
+                        <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-search me-2"></i>Найти вакансии
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

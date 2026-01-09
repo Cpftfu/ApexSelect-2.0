@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Отклик на вакансию - ApexSelect{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <i class="bi bi-briefcase"></i> ApexSelect
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-item nav-link" href="{% url 'vacancy_detail' vacancy.pk %}">
+                <i class="bi bi-arrow-left"></i> Назад к вакансии
+            </a>
+            <span class="nav-item nav-link">
+                <i class="bi bi-person-circle"></i> {{ user.username }}
+            </span>
+            <a class="nav-item nav-link" href="{% url 'logout' %}">
+                <i class="bi bi-box-arrow-right"></i> Выйти
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">
+                        <i class="bi bi-envelope-plus"></i> Отклик на вакансию
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Информация о вакансии -->
+                    <div class="alert alert-info mb-4">
+                        <h5 class="alert-heading">{{ vacancy.title }}</h5>
+                        <p class="mb-0">
+                            <i class="bi bi-building"></i> {{ vacancy.company }} • 
+                            <i class="bi bi-geo-alt"></i> {{ vacancy.location }}
+                        </p>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="id_cover_letter" class="form-label">
+                                <strong>Сопроводительное письмо</strong>
+                            </label>
+                            <textarea name="cover_letter" id="id_cover_letter" class="form-control" 
+                                      rows="8" placeholder="Расскажите, почему вы подходите для этой вакансии..."
+                                      required>{{ form.cover_letter.value|default:'' }}</textarea>
+                            {% if form.cover_letter.errors %}
+                                <div class="text-danger">{{ form.cover_letter.errors }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                Опишите ваш опыт, навыки и почему вы заинтересованы в этой позиции.
+                            </small>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="bi bi-info-circle"></i>
+                            После отправки отклика вы не сможете его изменить. 
+                            Вы сможете отслеживать статус отклика в разделе "Мои отклики".
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'vacancy_detail' vacancy.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Отмена
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-send-check"></i> Отправить отклик
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

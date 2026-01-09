@@ -38,10 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Третьи стороны
     'crispy_forms',
     'crispy_bootstrap5',
-    # Ваше приложение
     'apexSelect',
 ]
 
@@ -129,9 +127,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-LOGIN_URL = 'apexSelect:login'  # Используем пространство имен
-LOGIN_REDIRECT_URL = 'apexSelect:home'  # После входа
-LOGOUT_REDIRECT_URL = 'apexSelect:login'  # После выхода
+LOGIN_REDIRECT_URL = 'home'
+LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'login'
 
 AUTH_USER_MODEL = 'apexSelect.CustomUser'
 

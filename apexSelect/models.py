@@ -122,6 +122,9 @@ class Vacancy(models.Model):
     is_relocation = models.BooleanField(_('Релокация'), default=False)
     is_active = models.BooleanField(_('Активна'), default=True)
 
+    # Счетчик откликов
+    response_count = models.IntegerField(_('Количество откликов'), default=0)
+
     class Meta:
         verbose_name = _('Вакансия')
         verbose_name_plural = _('Вакансии')
@@ -153,6 +156,92 @@ class Vacancy(models.Model):
     def save(self, *args, **kwargs):
         # Автоматически устанавливаем published_at при публикации
         if self.status == 'published' and not self.published_at:
-            from django.utils.timezone import now
             self.published_at = now()
         super().save(*args, **kwargs)
+
+
+# НОВАЯ МОДЕЛЬ: Отклики на вакансии
+class VacancyResponse(models.Model):
+    # Статусы отклика
+    STATUS_CHOICES = [
+        ('pending', _('На рассмотрении')),
+        ('viewed', _('Просмотрено')),
+        ('invited', _('Приглашение на собеседование')),
+        ('rejected', _('Отказ')),
+        ('accepted', _('Принято')),
+    ]
+
+    # Связи
+    vacancy = models.ForeignKey(
+        Vacancy,
+        on_delete=models.CASCADE,
+        related_name='responses',
+        verbose_name=_('Вакансия')
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='vacancy_responses',
+        verbose_name=_('Пользователь')
+    )
+
+    # Сообщение от пользователя
+    cover_letter = models.TextField(
+        _('Сопроводительное письмо'),
+        max_length=2000,
+        blank=True,
+        help_text=_('Расскажите, почему вы подходите для этой вакансии')
+    )
+
+    # Статус отклика
+    status = models.CharField(
+        _('Статус отклика'),
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+
+    # Даты
+    created_at = models.DateTimeField(_('Дата отклика'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('Дата обновления'), auto_now=True)
+
+    # Административные заметки
+    admin_notes = models.TextField(
+        _('Заметки администратора'),
+        blank=True,
+        help_text=_('Внутренние заметки по отклику')
+    )
+
+    class Meta:
+        verbose_name = _('Отклик на вакансию')
+        verbose_name_plural = _('Отклики на вакансии')
+        ordering = ['-created_at']
+        unique_together = ['vacancy', 'user']  # Один пользователь может откликнуться на вакансию только один раз
+
+    def __str__(self):
+        return f"{self.user.username} → {self.vacancy.title}"
+
+    def get_status_color(self):
+        """Цвет для отображения статуса отклика"""
+        colors = {
+            'pending': 'secondary',
+            'viewed': 'info',
+            'invited': 'success',
+            'rejected': 'danger',
+            'accepted': 'success',
+        }
+        return colors.get(self.status, 'secondary')
+
+    def save(self, *args, **kwargs):
+        # При создании нового отклика увеличиваем счетчик в вакансии
+        if not self.pk:
+            self.vacancy.response_count += 1
+            self.vacancy.save(update_fields=['response_count'])
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # При удалении отклика уменьшаем счетчик в вакансии
+        self.vacancy.response_count -= 1
+        self.vacancy.save(update_fields=['response_count'])
+        super().delete(*args, **kwargs)

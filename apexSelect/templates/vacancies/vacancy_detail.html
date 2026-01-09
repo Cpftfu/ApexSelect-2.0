@@ -8,12 +8,16 @@
             <i class="bi bi-briefcase"></i> ApexSelect
         </a>
         <div class="navbar-nav ms-auto">
-            <a class="nav-item nav-link" href="{% url 'vacancy_list' %}">
-                <i class="bi bi-arrow-left"></i> К списку вакансий
+            <a class="nav-item nav-link" href="{% url 'home' %}">
+                <i class="bi bi-arrow-left"></i> На главную
             </a>
             {% if user.is_staff or user.is_superuser %}
-                <a class="btn btn-warning btn-sm ms-2" href="{% url 'edit_vacancy' vacancy.pk %}">
-                    <i class="bi bi-pencil"></i> Редактировать
+                <a class="nav-item nav-link" href="{% url 'vacancy_list' %}">
+                    <i class="bi bi-list-task"></i> Управление вакансиями
+                </a>
+            {% else %}
+                <a class="nav-item nav-link" href="{% url 'my_responses' %}">
+                    <i class="bi bi-envelope-check"></i> Мои отклики
                 </a>
             {% endif %}
             <span class="nav-item nav-link">
@@ -73,8 +77,33 @@
                         <i class="bi bi-clock"></i> <strong>Тип занятости:</strong> {{ vacancy.get_employment_type_display }}<br>
                         <i class="bi bi-person-badge"></i> <strong>Опыт:</strong> {{ vacancy.get_experience_display }}
                     </p>
+
+                    <!-- Кнопка отклика для обычных пользователей -->
+                    {% if not user.is_staff and not user.is_superuser %}
+                        <div class="mt-3">
+                            {% if has_responded %}
+                                <div class="alert alert-success p-2 mb-0">
+                                    <i class="bi bi-check-circle"></i>
+                                    <small>Вы уже откликнулись</small>
+                                </div>
+                            {% else %}
+                                <a href="{% url 'respond_vacancy' vacancy.pk %}" class="btn btn-success btn-lg">
+                                    <i class="bi bi-envelope-plus"></i> Откликнуться
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
+
+            <!-- Статистика откликов -->
+            {% if vacancy.response_count > 0 %}
+            <div class="mt-3 pt-3 border-top">
+                <small class="text-muted">
+                    <i class="bi bi-people"></i> {{ vacancy.response_count }} отклик(ов) на эту вакансию
+                </small>
+            </div>
+            {% endif %}
         </div>
     </div>
 
@@ -110,6 +139,37 @@
                     {{ vacancy.responsibilities|linebreaks }}
                 </div>
             </div>
+
+            <!-- Кнопка отклика (для обычных пользователей) в основном контенте -->
+            {% if not user.is_staff and not user.is_superuser %}
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-envelope-plus"></i> Хотите работать здесь?</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        {% if has_responded %}
+                            <div class="alert alert-success">
+                                <i class="bi bi-check-circle"></i>
+                                <strong>Вы уже откликнулись на эту вакансию!</strong><br>
+                                Вы можете отслеживать статус вашего отклика в разделе
+                                <a href="{% url 'my_responses' %}" class="alert-link">"Мои отклики"</a>.
+                            </div>
+                        {% else %}
+                            <h4 class="mb-3">Станьте кандидатом на эту позицию!</h4>
+                            <p class="text-muted mb-4">
+                                Отправьте свой отклик, и работодатель рассмотрит вашу кандидатуру.
+                                Расскажите, почему вы подходите для этой работы.
+                            </p>
+                            <a href="{% url 'respond_vacancy' vacancy.pk %}" class="btn btn-success btn-lg px-5">
+                                <i class="bi bi-envelope-plus"></i> Откликнуться на вакансию
+                            </a>
+                            <p class="text-muted small mt-3">
+                                <i class="bi bi-info-circle"></i> После отправки отклика вы сможете отслеживать его статус
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
         </div>
 
         <div class="col-lg-4">
@@ -172,6 +232,12 @@
                             <strong>Создатель:</strong> {{ vacancy.created_by.get_full_name|default:vacancy.created_by.username }}
                         </li>
                         {% endif %}
+                        {% if vacancy.response_count > 0 %}
+                        <li class="mb-2">
+                            <i class="bi bi-people text-success"></i>
+                            <strong>Откликов:</strong> {{ vacancy.response_count }}
+                        </li>
+                        {% endif %}
                     </ul>
 
                     {% if user.is_staff or user.is_superuser %}
@@ -179,6 +245,9 @@
                     <div class="d-grid gap-2">
                         <a href="{% url 'edit_vacancy' vacancy.pk %}" class="btn btn-warning">
                             <i class="bi bi-pencil"></i> Редактировать
+                        </a>
+                        <a href="{% url 'vacancy_responses' vacancy.pk %}" class="btn btn-info">
+                            <i class="bi bi-people"></i> Просмотреть отклики
                         </a>
                         <a href="{% url 'delete_vacancy' vacancy.pk %}" class="btn btn-danger">
                             <i class="bi bi-trash"></i> Удалить
@@ -189,5 +258,97 @@
             </div>
         </div>
     </div>
+
+    <!-- Список откликов (для админов) -->
+    {% if responses and user.is_staff or user.is_superuser %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-people"></i> Отклики на вакансию ({{ responses|length }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Пользователь</th>
+                                <th>Email</th>
+                                <th>Статус</th>
+                                <th>Дата отклика</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for response in responses %}
+                                <tr>
+                                    <td>{{ response.user.get_full_name|default:response.user.username }}</td>
+                                    <td>{{ response.user.email }}</td>
+                                    <td>
+                                        <form method="post" action="{% url 'update_response_status' response.pk %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                <option value="pending" {% if response.status == 'pending' %}selected{% endif %}>
+                                                    На рассмотрении
+                                                </option>
+                                                <option value="viewed" {% if response.status == 'viewed' %}selected{% endif %}>
+                                                    Просмотрено
+                                                </option>
+                                                <option value="invited" {% if response.status == 'invited' %}selected{% endif %}>
+                                                    Приглашение на собеседование
+                                                </option>
+                                                <option value="rejected" {% if response.status == 'rejected' %}selected{% endif %}>
+                                                    Отказ
+                                                </option>
+                                                <option value="accepted" {% if response.status == 'accepted' %}selected{% endif %}>
+                                                    Принято
+                                                </option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td>{{ response.created_at|date:"d.m.Y H:i" }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-info"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#responseModal{{ response.pk }}">
+                                            <i class="bi bi-eye"></i> Письмо
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Модальное окно с сопроводительным письмом -->
+                                <div class="modal fade" id="responseModal{{ response.pk }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Отклик от {{ response.user.username }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h6>Сопроводительное письмо:</h6>
+                                                <div class="border p-3 bg-light rounded">
+                                                    {{ response.cover_letter|linebreaks|default:"Не указано" }}
+                                                </div>
+                                                <hr>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <small><strong>Email:</strong> {{ response.user.email }}</small>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <small><strong>Дата:</strong> {{ response.created_at|date:"d.m.Y H:i" }}</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
