@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль {{ profile_user.username }} - ApexSelect{% endblock %}
+
+{% block content %}
+<style>
+    .user-profile {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+    
+    .profile-header {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #3498db, #2ecc71);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 2.5rem;
+    }
+    
+    .response-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        border-left: 4px solid #3498db;
+    }
+    
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .info-item:last-child {
+        border-bottom: none;
+    }
+</style>
+
+<div class="user-profile">
+    <div class="container">
+        <!-- Навигация -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <a href="{% url 'user_list' %}" class="btn btn-outline-primary mb-3">
+                            <i class="bi bi-arrow-left me-1"></i>Назад к списку
+                        </a>
+                    </div>
+                    <div>
+                        <a href="{% url 'recruiter_dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-briefcase me-1"></i>Кандидаты
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Профиль пользователя -->
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="profile-header text-center">
+                    <div class="profile-avatar mx-auto mb-3">
+                        {{ profile_user.username|first|upper }}
+                    </div>
+                    <h3 class="mb-2">{{ profile_user.get_full_name|default:profile_user.username }}</h3>
+                    <p class="text-muted mb-3">{{ profile_user.email }}</p>
+                    
+                    <div class="mb-4">
+                        <span class="badge bg-{% if profile_user.is_superuser %}success{% elif profile_user.is_staff %}primary{% else %}secondary{% endif %} p-2">
+                            {% if profile_user.is_superuser %}Администратор
+                            {% elif profile_user.is_staff %}Персонал
+                            {% else %}Пользователь{% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="text-muted small">Дата регистрации</div>
+                            <div class="fw-bold">{{ profile_user.date_joined|date:"d.m.Y" }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Последний вход</div>
+                            <div class="fw-bold">{{ profile_user.last_login|date:"d.m.Y H:i"|default:"-" }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Информация о пользователе -->
+                <div class="profile-header">
+                    <h5 class="mb-3">
+                        <i class="bi bi-info-circle me-2"></i>Информация
+                    </h5>
+                    <div class="info-item">
+                        <span class="text-muted">Имя пользователя:</span>
+                        <span class="fw-bold">{{ profile_user.username }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="text-muted">Email:</span>
+                        <span class="fw-bold">{{ profile_user.email }}</span>
+                    </div>
+                    {% if profile_user.first_name %}
+                    <div class="info-item">
+                        <span class="text-muted">Имя:</span>
+                        <span class="fw-bold">{{ profile_user.first_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if profile_user.last_name %}
+                    <div class="info-item">
+                        <span class="text-muted">Фамилия:</span>
+                        <span class="fw-bold">{{ profile_user.last_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if profile_user.phone_number %}
+                    <div class="info-item">
+                        <span class="text-muted">Телефон:</span>
+                        <span class="fw-bold">{{ profile_user.phone_number }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="info-item">
+                        <span class="text-muted">Активен:</span>
+                        <span class="badge bg-{% if profile_user.is_active %}success{% else %}danger{% endif %}">
+                            {% if profile_user.is_active %}Да{% else %}Нет{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <!-- Отклики пользователя -->
+                <div class="profile-header">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">
+                            <i class="bi bi-envelope-paper me-2"></i>Отклики пользователя
+                        </h5>
+                        <span class="badge bg-primary">
+                            {{ total_responses }} откликов
+                        </span>
+                    </div>
+                    
+                    {% if responses %}
+                        {% for response in responses %}
+                        <div class="response-card">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">
+                                        <a href="{% url 'vacancy_detail' response.vacancy.id %}" class="text-decoration-none">
+                                            {{ response.vacancy.title }}
+                                        </a>
+                                    </h6>
+                                    <p class="text-muted small mb-1">{{ response.vacancy.company }}</p>
+                                    <p class="text-muted small mb-0">
+                                        <i class="bi bi-calendar me-1"></i>
+                                        Отклик: {{ response.created_at|date:"d.m.Y H:i" }}
+                                    </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-end">
+                                        <span class="badge bg-{{ response.get_recruiter_status_color }} me-1">
+                                            {{ response.get_recruiter_status_display }}
+                                        </span>
+                                        <a href="{% url 'candidate_detail' response.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-envelope-x display-4 text-muted mb-3"></i>
+                            <p class="text-muted mb-0">Пользователь еще не откликался на вакансии</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -245,3 +245,114 @@ class VacancyResponse(models.Model):
         self.vacancy.response_count -= 1
         self.vacancy.save(update_fields=['response_count'])
         super().delete(*args, **kwargs)
+
+
+class VacancyResponse(models.Model):
+    # Добавим новые статусы для рекрутера
+    RECRUITER_STATUS_CHOICES = [
+        ('new', _('Новый')),
+        ('screening', _('Скрининг')),
+        ('interview', _('Интервью')),
+        ('technical', _('Техническое собеседование')),
+        ('offer', _('Оффер')),
+        ('hired', _('Принят')),
+        ('rejected', _('Отказ')),
+        ('no_response', _('Нет ответа')),
+    ]
+
+    vacancy = models.ForeignKey(
+        Vacancy,
+        on_delete=models.CASCADE,
+        related_name='responses',
+        verbose_name=_('Вакансия')
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='vacancy_responses',
+        verbose_name=_('Пользователь')
+    )
+    cover_letter = models.TextField(
+        _('Сопроводительное письмо'),
+        max_length=2000,
+        blank=True,
+        help_text=_('Расскажите, почему вы подходите для этой вакансии')
+    )
+    status = models.CharField(
+        _('Статус отклика'),
+        max_length=20,
+        choices=VacancyResponse.STATUS_CHOICES,
+        default='pending'
+    )
+    recruiter_status = models.CharField(
+        _('Статус рекрутера'),
+        max_length=20,
+        choices=RECRUITER_STATUS_CHOICES,
+        default='new',
+        help_text=_('Статус кандидата в процессе найма')
+    )
+    recruiter_notes = models.TextField(
+        _('Заметки рекрутера'),
+        blank=True,
+        help_text=_('Внутренние заметки по кандидату')
+    )
+    interview_date = models.DateTimeField(
+        _('Дата собеседования'),
+        null=True,
+        blank=True
+    )
+    salary_offer = models.IntegerField(
+        _('Предложенная зарплата'),
+        null=True,
+        blank=True
+    )
+    created_at = models.DateTimeField(_('Дата отклика'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('Дата обновления'), auto_now=True)
+    admin_notes = models.TextField(
+        _('Заметки администратора'),
+        blank=True,
+        help_text=_('Внутренние заметки по отклику')
+    )
+
+    class Meta:
+        verbose_name = _('Отклик на вакансию')
+        verbose_name_plural = _('Отклики на вакансии')
+        ordering = ['-created_at']
+        unique_together = ['vacancy', 'user']
+
+    def __str__(self):
+        return f"{self.user.username} → {self.vacancy.title}"
+
+    def get_status_color(self):
+        colors = {
+            'pending': 'secondary',
+            'viewed': 'info',
+            'invited': 'success',
+            'rejected': 'danger',
+            'accepted': 'success',
+        }
+        return colors.get(self.status, 'secondary')
+
+    def get_recruiter_status_color(self):
+        colors = {
+            'new': 'info',
+            'screening': 'primary',
+            'interview': 'warning',
+            'technical': 'warning',
+            'offer': 'success',
+            'hired': 'success',
+            'rejected': 'danger',
+            'no_response': 'secondary',
+        }
+        return colors.get(self.recruiter_status, 'secondary')
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.vacancy.response_count += 1
+            self.vacancy.save(update_fields=['response_count'])
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.vacancy.response_count -= 1
+        self.vacancy.save(update_fields=['response_count'])
+        super().delete(*args, **kwargs)

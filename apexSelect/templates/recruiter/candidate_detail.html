@@ -1,0 +1,498 @@
+{% extends 'base.html' %}
+
+{% block title %}Кандидат {{ response.user.username }} - ApexSelect{% endblock %}
+
+{% block content %}
+<style>
+    .candidate-detail {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+    
+    .candidate-header {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .candidate-avatar-lg {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #3498db, #2ecc71);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 2.5rem;
+        margin: 0 auto 20px;
+    }
+    
+    .info-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+    
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 10px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e0e0e0;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -26px;
+        top: 5px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #3498db;
+        border: 2px solid white;
+    }
+    
+    .status-pill {
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 25px;
+        font-weight: 500;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="candidate-detail">
+    <div class="container">
+        <!-- Заголовок и навигация -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <a href="{% url 'recruiter_dashboard' %}" class="btn btn-outline-primary mb-3">
+                            <i class="bi bi-arrow-left me-1"></i>Назад к списку
+                        </a>
+                        <h1 class="h3 mb-0">Кандидат</h1>
+                    </div>
+                    <div>
+                        <a href="{% url 'user_profile' response.user.id %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-person-circle me-1"></i>Профиль пользователя
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основная информация -->
+        <div class="row">
+            <div class="col-lg-4">
+                <!-- Карточка кандидата -->
+                <div class="candidate-header text-center">
+                    <div class="candidate-avatar-lg">
+                        {{ response.user.username|first|upper }}
+                    </div>
+                    <h3 class="mb-2">{{ response.user.get_full_name|default:response.user.username }}</h3>
+                    <p class="text-muted mb-3">{{ response.user.email }}</p>
+                    
+                    <div class="mb-4">
+                        <span class="status-pill bg-{{ response.get_recruiter_status_color }}">
+                            {{ response.get_recruiter_status_display }}
+                        </span>
+                        <span class="status-pill bg-{{ response.get_status_color }}">
+                            {{ response.get_status_display }}
+                        </span>
+                    </div>
+                    
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="text-muted small">Дата регистрации</div>
+                            <div class="fw-bold">{{ response.user.date_joined|date:"d.m.Y" }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Дата отклика</div>
+                            <div class="fw-bold">{{ response.created_at|date:"d.m.Y H:i" }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Контактная информация -->
+                <div class="info-card">
+                    <h5 class="mb-3">
+                        <i class="bi bi-telephone me-2"></i>Контактная информация
+                    </h5>
+                    {% if response.user.phone_number %}
+                    <p class="mb-2">
+                        <i class="bi bi-phone me-2"></i>
+                        {{ response.user.phone_number }}
+                    </p>
+                    {% endif %}
+                    <p class="mb-0">
+                        <i class="bi bi-envelope me-2"></i>
+                        {{ response.user.email }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <!-- Информация о вакансии -->
+                <div class="info-card">
+                    <h5 class="mb-3">
+                        <i class="bi bi-briefcase me-2"></i>Информация о вакансии
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Вакансия:</strong><br>
+                                <a href="{% url 'vacancy_detail' response.vacancy.id %}" class="text-decoration-none">
+                                    {{ response.vacancy.title }}
+                                </a>
+                            </p>
+                            <p class="mb-2">
+                                <strong>Компания:</strong><br>
+                                {{ response.vacancy.company }}
+                            </p>
+                            <p class="mb-2">
+                                <strong>Зарплата:</strong><br>
+                                {{ response.vacancy.get_salary_display }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Локация:</strong><br>
+                                {{ response.vacancy.location }}
+                            </p>
+                            <p class="mb-2">
+                                <strong>Тип занятости:</strong><br>
+                                {{ response.vacancy.get_employment_type_display }}
+                            </p>
+                            <p class="mb-0">
+                                <strong>Опыт:</strong><br>
+                                {{ response.vacancy.get_experience_display }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Форма управления кандидатом -->
+                <div class="info-card">
+                    <h5 class="mb-3">
+                        <i class="bi bi-gear me-2"></i>Управление кандидатом
+                    </h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Статус в процессе найма</label>
+                                {{ form.recruiter_status }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Дата собеседования</label>
+                                {{ form.interview_date }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Предложенная зарплата</label>
+                                {{ form.salary_offer }}
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Заметки рекрутера</label>
+                                {{ form.recruiter_notes }}
+                            </div>
+                        </div>
+                                                <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>Сохранить изменения
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Сопроводительное письмо -->
+                <div class="info-card">
+                    <h5 class="mb-3">
+                        <i class="bi bi-chat-text me-2"></i>Сопроводительное письмо
+                    </h5>
+                    {% if response.cover_letter %}
+                        <div class="bg-light p-4 rounded">
+                            {{ response.cover_letter|linebreaks }}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-chat-square-text display-4 text-muted mb-3"></i>
+                            <p class="text-muted mb-0">Кандидат не приложил сопроводительное письмо</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- История изменений -->
+                <div class="info-card">
+                    <h5 class="mb-3">
+                        <i class="bi bi-clock-history me-2"></i>История статусов
+                    </h5>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>Отклик отправлен</strong>
+                                    <p class="text-muted mb-0">Кандидат откликнулся на вакансию</p>
+                                </div>
+                                <div class="text-muted small">
+                                    {{ response.created_at|date:"d.m.Y H:i" }}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if response.status != 'pending' %}
+                        <div class="timeline-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>Статус изменен</strong>
+                                    <p class="text-muted mb-0">На {{ response.get_status_display }}</p>
+                                </div>
+                                <div class="text-muted small">
+                                    {{ response.updated_at|date:"d.m.Y H:i" }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if response.recruiter_status != 'new' %}
+                        <div class="timeline-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>Изменен статус рекрутера</strong>
+                                    <p class="text-muted mb-0">На {{ response.get_recruiter_status_display }}</p>
+                                </div>
+                                <div class="text-muted small">
+                                    {{ response.updated_at|date:"d.m.Y H:i" }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if response.interview_date %}
+                        <div class="timeline-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>Назначено собеседование</strong>
+                                    <p class="text-muted mb-0">На {{ response.interview_date|date:"d.m.Y H:i" }}</p>
+                                </div>
+                                <div class="text-muted small">
+                                    {{ response.interview_date|date:"d.m.Y" }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if response.salary_offer %}
+                        <div class="timeline-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>Предложена зарплата</strong>
+                                    <p class="text-muted mb-0">{{ response.salary_offer }} {{ response.vacancy.currency }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Быстрые действия -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="info-card">
+                    <h5 class="mb-3">
+                        <i class="bi bi-lightning-charge me-2"></i>Быстрые действия
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <form action="{% url 'update_recruiter_status' response.id %}" method="post" class="quick-status-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="screening">
+                                <button type="submit" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-search me-1"></i>На скрининг
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <form action="{% url 'update_recruiter_status' response.id %}" method="post" class="quick-status-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="interview">
+                                <button type="submit" class="btn btn-outline-warning w-100">
+                                    <i class="bi bi-calendar-check me-1"></i>На собеседование
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <form action="{% url 'update_recruiter_status' response.id %}" method="post" class="quick-status-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="offer">
+                                <button type="submit" class="btn btn-outline-success w-100">
+                                    <i class="bi bi-hand-thumbs-up me-1"></i>Оффер
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <form action="{% url 'update_recruiter_status' response.id %}" method="post" class="quick-status-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="rejected">
+                                <button type="submit" class="btn btn-outline-danger w-100">
+                                    <i class="bi bi-x-circle me-1"></i>Отказ
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // AJAX для быстрых действий
+    document.querySelectorAll('.quick-status-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const button = this.querySelector('button');
+            const originalText = button.innerHTML;
+
+            // Показываем индикатор загрузки
+            button.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Обновление...';
+            button.disabled = true;
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Обновляем статус на странице
+                    const statusPill = document.querySelector('.status-pill.bg-' + data.status_color);
+                    if (statusPill) {
+                        statusPill.textContent = data.new_status;
+                        statusPill.className = 'status-pill bg-' + data.status_color;
+                    }
+
+                    // Показываем уведомление
+                    showNotification('Статус успешно обновлен', 'success');
+
+                    // Обновляем страницу через 1 секунду
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showNotification('Ошибка при обновлении статуса', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Ошибка при обновлении статуса', 'danger');
+            })
+            .finally(() => {
+                // Восстанавливаем кнопку
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+        });
+    });
+
+    // Валидация даты собеседования
+    const interviewDateInput = document.querySelector('input[name="interview_date"]');
+    if (interviewDateInput) {
+        interviewDateInput.addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            const now = new Date();
+
+            if (selectedDate < now) {
+                showNotification('Дата собеседования не может быть в прошлом', 'warning');
+                this.value = '';
+            }
+        });
+    }
+
+    // Функция показа уведомления
+    function showNotification(message, type) {
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alert.style.top = '20px';
+        alert.style.right = '20px';
+        alert.style.zIndex = '9999';
+        alert.style.minWidth = '300px';
+        alert.innerHTML = `
+            <i class="bi ${type === 'success' ? 'bi-check-circle' : type === 'warning' ? 'bi-exclamation-triangle' : 'bi-x-circle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        document.body.appendChild(alert);
+
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.remove();
+            }
+        }, 5000);
+    }
+
+    // Автоматическое закрытие сообщений Django
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert:not(.position-fixed)');
+        alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+</script>
+
+{% block extra_css %}
+<style>
+    .quick-status-form button {
+        transition: all 0.3s;
+    }
+
+    .quick-status-form button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .quick-status-form button:active {
+        transform: translateY(0);
+    }
+
+    .bg-info { background-color: #17a2b8 !important; color: white !important; }
+    .bg-primary { background-color: #007bff !important; color: white !important; }
+    .bg-warning { background-color: #ffc107 !important; color: black !important; }
+    .bg-success { background-color: #28a745 !important; color: white !important; }
+    .bg-danger { background-color: #dc3545 !important; color: white !important; }
+    .bg-secondary { background-color: #6c757d !important; color: white !important; }
+</style>
+{% endblock %}
+
+{% endblock %}

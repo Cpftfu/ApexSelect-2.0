@@ -23,6 +23,16 @@ urlpatterns = [
     path('responses/<int:pk>/delete/', views.delete_response_view, name='delete_response'),
     path('vacancies/<int:pk>/responses/', views.vacancy_responses_view, name='vacancy_responses'),
     path('responses/<int:pk>/update-status/', views.update_response_status_view, name='update_response_status'),
+
+
+    # Рекрутер
+    path('recruiter/', views.recruiter_dashboard, name='recruiter_dashboard'),
+    path('recruiter/users/', views.user_list, name='user_list'),
+    path('recruiter/users/<int:user_id>/', views.user_profile, name='user_profile'),
+    path('recruiter/candidate/<int:response_id>/', views.candidate_detail, name='candidate_detail'),
+    path('recruiter/candidate/<int:response_id>/update-status/',
+         views.update_recruiter_status,
+         name='update_recruiter_status'),
 ]
 
 # Обработчики для сброса пароля (опционально)

@@ -250,3 +250,35 @@ class VacancyResponseForm(forms.ModelForm):
             instance.save()
 
         return instance
+
+
+class RecruiterResponseForm(forms.ModelForm):
+    class Meta:
+        model = VacancyResponse
+        fields = ['recruiter_status', 'recruiter_notes', 'interview_date', 'salary_offer']
+        widgets = {
+            'recruiter_notes': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Заметки по кандидату...'
+            }),
+            'interview_date': forms.DateTimeInput(attrs={
+                'class': 'form-control',
+                'type': 'datetime-local'
+            }),
+            'salary_offer': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Предложенная зарплата'
+            }),
+            'recruiter_status': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Кастомизируем labels
+        self.fields['recruiter_status'].label = 'Статус в процессе найма'
+        self.fields['recruiter_notes'].label = 'Заметки рекрутера'
+        self.fields['interview_date'].label = 'Дата собеседования'
+        self.fields['salary_offer'].label = 'Предложенная зарплата'
