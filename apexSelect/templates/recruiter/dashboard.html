@@ -8,9 +8,18 @@
     .recruiter-dashboard {
         background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         min-height: 100vh;
-        padding: 20px 0;
+        padding: 30px 0;
     }
-    
+
+    .dashboard-header {
+        background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+        color: white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
     .stat-card {
         background: white;
         border-radius: 15px;
@@ -18,25 +27,67 @@
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         margin-bottom: 20px;
         transition: transform 0.3s;
+        text-align: center;
     }
-    
+
     .stat-card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     }
-    
+
     .stat-number {
         font-size: 2.5rem;
         font-weight: bold;
         margin-bottom: 10px;
+        color: #3498db;
     }
-    
-    .status-badge {
-        padding: 8px 15px;
-        border-radius: 20px;
-        font-weight: 500;
+
+    .stat-label {
+        color: #666;
         font-size: 0.9rem;
+        font-weight: 500;
     }
-    
+
+    .pipeline-stages {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 10px;
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .pipeline-stage {
+        flex: 1;
+        min-width: 120px;
+        text-align: center;
+        padding: 15px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        transition: all 0.3s;
+    }
+
+    .pipeline-stage:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .stage-count {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #3498db;
+    }
+
+    .stage-name {
+        font-size: 0.9rem;
+        color: #666;
+        font-weight: 500;
+    }
+
     .candidate-card {
         background: white;
         border-radius: 10px;
@@ -46,12 +97,12 @@
         border-left: 4px solid #3498db;
         transition: all 0.3s;
     }
-    
+
     .candidate-card:hover {
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
         transform: translateX(5px);
     }
-    
+
     .candidate-avatar {
         width: 60px;
         height: 60px;
@@ -63,8 +114,9 @@
         color: white;
         font-weight: bold;
         font-size: 1.5rem;
+        box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
     }
-    
+
     .filter-section {
         background: white;
         border-radius: 15px;
@@ -72,58 +124,109 @@
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         margin-bottom: 30px;
     }
-    
-    .pipeline-stages {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 30px;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    
-    .pipeline-stage {
-        flex: 1;
-        min-width: 120px;
-        text-align: center;
-        padding: 15px;
-        border-radius: 10px;
-        background: white;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    }
-    
-    .stage-count {
-        font-size: 1.8rem;
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-    
-    .stage-name {
-        font-size: 0.9rem;
-        color: #666;
-    }
-    
-    .quick-actions {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-    
-    .action-btn {
+
+    .status-badge {
         padding: 8px 15px;
         border-radius: 20px;
-        border: none;
+        font-weight: 500;
         font-size: 0.9rem;
+        display: inline-block;
+    }
+
+    .quick-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        padding: 6px 12px;
+        border-radius: 20px;
+        border: 2px solid;
+        font-size: 0.85rem;
         transition: all 0.3s;
         cursor: pointer;
+        background: white;
     }
-    
-    .action-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+
+    .btn-outline-primary {
+        color: #3498db;
+        border-color: #3498db;
     }
-    
+
+    .btn-outline-primary:hover {
+        background: #3498db;
+        color: white;
+    }
+
+    .btn-outline-secondary {
+        color: #666;
+        border-color: #666;
+    }
+
+    .btn-outline-secondary:hover {
+        background: #666;
+        color: white;
+    }
+
     .dropdown-status {
-        min-width: 180px;
+        min-width: 200px;
+    }
+
+    .dropdown-item:hover {
+        background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+        color: white;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 10px 15px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+        border: none;
+        border-radius: 10px;
+        font-weight: 500;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #2980b9 0%, #27ae60 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .pipeline-stage {
+            min-width: 100px;
+            padding: 10px;
+        }
+
+        .stage-count {
+            font-size: 1.5rem;
+        }
+
+        .candidate-avatar {
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+        }
+
+        .quick-actions {
+            flex-direction: column;
+        }
+
+        .action-btn {
+            width: 100%;
+        }
     }
 </style>
 
@@ -132,49 +235,83 @@
         <!-- Заголовок -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h1 class="h3 mb-0">
-                        <i class="bi bi-briefcase me-2"></i>Панель рекрутера
-                    </h1>
-                    <div class="btn-group">
-                        <a href="{% url 'user_list' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-people me-1"></i>Все пользователи
-                        </a>
-                        <a href="{% url 'vacancy_list' %}" class="btn btn-outline-secondary">
-                            <i class="bi bi-list-task me-1"></i>Вакансии
-                        </a>
+                <div class="dashboard-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="h2 mb-2">
+                                <i class="bi bi-briefcase me-2"></i>Панель рекрутера
+                            </h1>
+                            <p class="mb-0 opacity-90">Управление кандидатами и процессом найма</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="btn-group">
+                                <a href="{% url 'user_list' %}" class="btn btn-outline-light">
+                                    <i class="bi bi-people me-1"></i>Пользователи
+                                </a>
+                                <a href="{% url 'vacancy_list' %}" class="btn btn-outline-light ms-2">
+                                    <i class="bi bi-list-task me-1"></i>Вакансии
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <p class="text-muted mb-0">Управление кандидатами и процессом найма</p>
             </div>
         </div>
 
-        <!-- Статистика по пайплайну -->
+        <!-- Общая статистика -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_responses }}</div>
+                    <div class="stat-label">Всего откликов</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ new_count }}</div>
+                    <div class="stat-label">Новые кандидаты</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ interview_count }}</div>
+                    <div class="stat-label">На собеседовании</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ hired_count }}</div>
+                    <div class="stat-label">Приняты на работу</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Пайплайн найма -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="pipeline-stages">
-                    <div class="pipeline-stage" style="border-top: 4px solid #3498db;">
-                        <div class="stage-count text-primary">{{ new_count }}</div>
+                    <div class="pipeline-stage">
+                        <div class="stage-count">{{ new_count }}</div>
                         <div class="stage-name">Новые</div>
                     </div>
-                    <div class="pipeline-stage" style="border-top: 4px solid #2ecc71;">
-                        <div class="stage-count text-success">{{ screening_count }}</div>
+                    <div class="pipeline-stage">
+                        <div class="stage-count">{{ screening_count }}</div>
                         <div class="stage-name">Скрининг</div>
                     </div>
-                    <div class="pipeline-stage" style="border-top: 4px solid #f39c12;">
-                        <div class="stage-count text-warning">{{ interview_count }}</div>
-                        <div class="stage-name">Собеседование</div>
+                    <div class="pipeline-stage">
+                        <div class="stage-count">{{ interview_count }}</div>
+                        <div class="stage-name">Интервью</div>
                     </div>
-                    <div class="pipeline-stage" style="border-top: 4px solid #9b59b6;">
-                        <div class="stage-count" style="color: #9b59b6;">{{ technical_count }}</div>
+                    <div class="pipeline-stage">
+                        <div class="stage-count">{{ technical_count }}</div>
                         <div class="stage-name">Тех. собесед.</div>
                     </div>
-                    <div class="pipeline-stage" style="border-top: 4px solid #1abc9c;">
-                        <div class="stage-count" style="color: #1abc9c;">{{ offer_count }}</div>
+                    <div class="pipeline-stage">
+                        <div class="stage-count">{{ offer_count }}</div>
                         <div class="stage-name">Оффер</div>
                     </div>
-                    <div class="pipeline-stage" style="border-top: 4px solid #27ae60;">
-                        <div class="stage-count text-success">{{ hired_count }}</div>
+                    <div class="pipeline-stage">
+                        <div class="stage-count">{{ hired_count }}</div>
                         <div class="stage-name">Приняты</div>
                     </div>
                 </div>
@@ -185,8 +322,9 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="filter-section">
+                    <h5 class="mb-3"><i class="bi bi-funnel me-2"></i>Фильтры и поиск</h5>
                     <form method="get" class="row g-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label">Статус кандидата</label>
                             <select name="recruiter_status" class="form-select">
                                 <option value="">Все статусы</option>
@@ -200,41 +338,35 @@
                                 <option value="no_response" {% if recruiter_status_filter == 'no_response' %}selected{% endif %}>Нет ответа</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label">Вакансия</label>
                             <select name="vacancy" class="form-select" id="vacancy-select">
                                 <option value="">Все вакансии</option>
                                 {% for vacancy in vacancies %}
-                                <option value="{{ vacancy.id }}">
+                                <option value="{{ vacancy.id }}" {% if vacancy_filter == vacancy.id|stringformat:"s" %}selected{% endif %}>
                                     {{ vacancy.title }} ({{ vacancy.company }})
                                 </option>
                                 {% endfor %}
                             </select>
                         </div>
-
-                        <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            // Устанавливаем выбранную вакансию
-                            const vacancyFilter = "{{ vacancy_filter|escapejs }}";
-                            if (vacancyFilter) {
-                                const select = document.getElementById('vacancy-select');
-                                if (select) {
-                                    select.value = vacancyFilter;
-                                }
-                            }
-                        });
-                        </script>
                         <div class="col-md-4">
-                            <label class="form-label">Поиск</label>
+                            <label class="form-label">Поиск кандидатов</label>
                             <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
                                 <input type="text" name="search" class="form-control"
                                        placeholder="Поиск по имени, email или вакансии..."
                                        value="{{ search_query }}">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-search"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <div class="d-flex gap-2 w-100">
+                                <button type="submit" class="btn btn-primary flex-grow-1">
+                                    <i class="bi bi-funnel me-1"></i>Применить
                                 </button>
                                 {% if recruiter_status_filter or vacancy_filter or search_query %}
-                                <a href="{% url 'recruiter_dashboard' %}" class="btn btn-outline-secondary">
+                                <a href="{% url 'recruiter_dashboard' %}" class="btn btn-outline-secondary" title="Сбросить фильтры">
                                     <i class="bi bi-x-circle"></i>
                                 </a>
                                 {% endif %}
@@ -248,10 +380,13 @@
         <!-- Список кандидатов -->
         <div class="row">
             <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">Кандидаты ({{ responses.count }})</h5>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="mb-0">
+                        <i class="bi bi-people me-2"></i>Кандидаты
+                        <span class="badge bg-primary ms-2">{{ responses.count }}</span>
+                    </h5>
                     <div class="text-muted">
-                        Всего откликов: {{ total_responses }}
+                        Показано {{ responses.count }} из {{ total_responses }} откликов
                     </div>
                 </div>
 
@@ -259,12 +394,12 @@
                     {% for response in responses %}
                     <div class="candidate-card">
                         <div class="row align-items-center">
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <div class="candidate-avatar">
                                     {{ response.user.username|first|upper }}
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <h6 class="mb-1">
                                     <a href="{% url 'user_profile' response.user.id %}" class="text-decoration-none">
                                         {{ response.user.get_full_name|default:response.user.username }}
@@ -275,42 +410,52 @@
                                 </p>
                                 <p class="text-muted small mb-0">
                                     <i class="bi bi-calendar me-1"></i>
-                                    Откликнулся: {{ response.created_at|date:"d.m.Y" }}
+                                    {{ response.created_at|date:"d.m.Y" }}
                                 </p>
                             </div>
                             <div class="col-md-3">
                                 <h6 class="mb-1">{{ response.vacancy.title }}</h6>
                                 <p class="text-muted small mb-0">{{ response.vacancy.company }}</p>
+                                <span class="badge bg-light text-dark small">
+                                    {{ response.vacancy.get_experience_display }}
+                                </span>
                             </div>
                             <div class="col-md-3">
-                                <div class="d-flex flex-column gap-2">
-                                    <div>
-                                        <span class="status-badge bg-{{ response.get_recruiter_status_color }}">
-                                            {{ response.get_recruiter_status_display }}
-                                        </span>
+                                <div class="mb-2">
+                                    <span class="status-badge bg-{{ response.get_recruiter_status_color }}">
+                                        {{ response.get_recruiter_status_display }}
+                                    </span>
+                                </div>
+                                {% if response.status %}
+                                <span class="badge bg-light text-dark small">
+                                    {{ response.get_status_display }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-2">
+                                <div class="quick-actions">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle action-btn"
+                                                type="button" data-bs-toggle="dropdown">
+                                            <i class="bi bi-arrow-right-circle me-1"></i>Статус
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-status">
+                                            <li><h6 class="dropdown-header">Изменить статус</h6></li>
+                                            <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="new">Новый</a></li>
+                                            <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="screening">Скрининг</a></li>
+                                            <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="interview">Интервью</a></li>
+                                            <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="technical">Техническое собеседование</a></li>
+                                            <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="offer">Оффер</a></li>
+                                            <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="hired">Принят</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item change-status text-danger" href="#" data-response-id="{{ response.id }}" data-status="rejected">Отказ</a></li>
+                                            <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="no_response">Нет ответа</a></li>
+                                        </ul>
                                     </div>
-                                    <div class="quick-actions">
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-outline-primary dropdown-toggle action-btn"
-                                                    type="button" data-bs-toggle="dropdown">
-                                                <i class="bi bi-arrow-right-circle me-1"></i>Изменить статус
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-status">
-                                                <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="new">Новый</a></li>
-                                                <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="screening">Скрининг</a></li>
-                                                <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="interview">Интервью</a></li>
-                                                <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="technical">Техническое собеседование</a></li>
-                                                <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="offer">Оффер</a></li>
-                                                <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="hired">Принят</a></li>
-                                                <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="rejected">Отказ</a></li>
-                                                <li><a class="dropdown-item change-status" href="#" data-response-id="{{ response.id }}" data-status="no_response">Нет ответа</a></li>
-                                            </ul>
-                                        </div>
-                                        <a href="{% url 'candidate_detail' response.id %}"
-                                           class="btn btn-sm btn-outline-secondary action-btn">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                    </div>
+                                    <a href="{% url 'candidate_detail' response.id %}"
+                                       class="btn btn-sm btn-outline-secondary action-btn" title="Подробнее">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -338,22 +483,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Автоматическая отправка формы при изменении фильтров
-    const recruiterStatusSelect = document.querySelector('select[name="recruiter_status"]');
-    const vacancySelect = document.querySelector('select[name="vacancy"]');
-
-    if (recruiterStatusSelect) {
-        recruiterStatusSelect.addEventListener('change', function() {
-            this.closest('form').submit();
-        });
-    }
-
-    if (vacancySelect) {
-        vacancySelect.addEventListener('change', function() {
-            this.closest('form').submit();
-        });
-    }
-
     // Быстрое изменение статуса кандидата
     document.querySelectorAll('.change-status').forEach(link => {
         link.addEventListener('click', function(e) {
@@ -363,10 +492,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const newStatus = this.getAttribute('data-status');
             const candidateCard = this.closest('.candidate-card');
             const statusBadge = candidateCard.querySelector('.status-badge');
+            const statusText = candidateCard.querySelector('.dropdown-toggle');
+
+            // Сохраняем оригинальный текст
+            const originalText = statusBadge.textContent;
+            const originalBtnText = statusText.textContent;
 
             // Показываем индикатор загрузки
-            const originalText = statusBadge.textContent;
-            statusBadge.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+            statusBadge.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Обновление...';
+            statusBadge.className = 'status-badge bg-secondary';
+            statusText.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Обновление...';
 
             // Отправляем AJAX запрос
             fetch(`/recruiter/candidate/${responseId}/update-status/`, {
@@ -389,6 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Обновляем отображение
                     statusBadge.textContent = data.new_status;
                     statusBadge.className = `status-badge bg-${data.status_color}`;
+                    statusText.innerHTML = '<i class="bi bi-arrow-right-circle me-1"></i>Статус';
 
                     // Показываем уведомление
                     showNotification('Статус успешно обновлен', 'success');
@@ -404,6 +540,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error('Error:', error);
                 statusBadge.textContent = originalText;
+                statusText.textContent = originalBtnText;
                 showNotification('Ошибка при обновлении статуса', 'danger');
             });
         });
@@ -437,10 +574,13 @@ document.addEventListener('DOMContentLoaded', function() {
         alert.style.right = '20px';
         alert.style.zIndex = '9999';
         alert.style.minWidth = '300px';
+        alert.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
         alert.innerHTML = `
-            <i class="bi ${type === 'success' ? 'bi-check-circle' : 'bi-exclamation-triangle'} me-2"></i>
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="d-flex align-items-center">
+                <i class="bi ${type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'} me-2 fs-4"></i>
+                <div class="flex-grow-1">${message}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
         `;
 
         document.body.appendChild(alert);
@@ -456,16 +596,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 {% block extra_css %}
 <style>
+    .bg-new { background: linear-gradient(135deg, #3498db, #2980b9) !important; color: white !important; }
+    .bg-screening { background: linear-gradient(135deg, #2ecc71, #27ae60) !important; color: white !important; }
+    .bg-interview { background: linear-gradient(135deg, #f39c12, #e67e22) !important; color: white !important; }
+    .bg-technical { background: linear-gradient(135deg, #9b59b6, #8e44ad) !important; color: white !important; }
+    .bg-offer { background: linear-gradient(135deg, #1abc9c, #16a085) !important; color: white !important; }
+    .bg-hired { background: linear-gradient(135deg, #27ae60, #229954) !important; color: white !important; }
+    .bg-rejected { background: linear-gradient(135deg, #e74c3c, #c0392b) !important; color: white !important; }
+    .bg-no_response { background: linear-gradient(135deg, #95a5a6, #7f8c8d) !important; color: white !important; }
+
     .bg-info { background-color: #17a2b8 !important; color: white !important; }
     .bg-primary { background-color: #007bff !important; color: white !important; }
     .bg-warning { background-color: #ffc107 !important; color: black !important; }
     .bg-success { background-color: #28a745 !important; color: white !important; }
     .bg-danger { background-color: #dc3545 !important; color: white !important; }
     .bg-secondary { background-color: #6c757d !important; color: white !important; }
-
-    .text-primary { color: #007bff !important; }
-    .text-success { color: #28a745 !important; }
-    .text-warning { color: #ffc107 !important; }
 </style>
 {% endblock %}
 

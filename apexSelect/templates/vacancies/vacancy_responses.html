@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Отклики на вакансию "{{ vacancy.title }}" - ApexSelect{% endblock %}
+
+{% block content %}
+<style>
+    .responses-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+    
+    .vacancy-header {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .response-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        border-left: 4px solid #3498db;
+        transition: all 0.3s;
+    }
+    
+    .response-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #3498db, #2ecc71);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    
+    .stats-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+    
+    .stats-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #3498db;
+        margin-bottom: 5px;
+    }
+    
+    .stats-label {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .cover-letter-preview {
+        max-height: 100px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .cover-letter-preview::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 20px;
+        background: linear-gradient(to bottom, transparent, white);
+    }
+    
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+</style>
+
+<div class="responses-container">
+    <div class="container">
+        <!-- Заголовок и навигация -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <a href="{% url 'vacancy_detail' vacancy.id %}" class="btn btn-outline-primary mb-3">
+                            <i class="bi bi-arrow-left me-1"></i>Назад к вакансии
+                        </a>
+                        <h1 class="h3 mb-0">
+                            <i class="bi bi-envelope-paper me-2"></i>Отклики на вакансию
+                        </h1>
+                    </div>
+                    <div>
+                        <a href="{% url 'recruiter_dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-briefcase me-1"></i>Панель рекрутера
+                        </a>
+                    </div>
+                </div>
+                <p class="text-muted mb-0">Вакансия: {{ vacancy.title }}</p>
+            </div>
+        </div>
+
+        <!-- Информация о вакансии -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="vacancy-header">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h3 class="mb-2">{{ vacancy.title }}</h3>
+                            <h6 class="text-muted mb-3">{{ vacancy.company }}</h6>
+                            <p class="mb-2">{{ vacancy.short_description }}</p>
+                            <div class="d-flex gap-2 mb-3">
+                                <span class="badge bg-info">{{ vacancy.get_employment_type_display }}</span>
+                                <span class="badge bg-secondary">{{ vacancy.get_experience_display }}</span>
+                                {% if vacancy.is_remote %}
+                                <span class="badge bg-primary">Удалённая работа</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-end">
+                                <h4 class="text-primary mb-3">{{ vacancy.get_salary_display }}</h4>
+                                <p class="text-muted mb-2">
+                                    <i class="bi bi-geo-alt me-1"></i>{{ vacancy.location }}
+                                </p>
+                                <p class="text-muted mb-0">
+                                    <i class="bi bi-calendar me-1"></i>
+                                    Опубликована: {{ vacancy.published_at|date:"d.m.Y"|default:"-" }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Статистика -->
+        <div class="row mb-4">
+            <div class="col-md-2">
+                <div class="stats-card">
+                    <div class="stats-number">{{ total_count|default:"0" }}</div>
+                    <div class="stats-label">Всего откликов</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stats-card">
+                    <div class="stats-number">{{ pending_count|default:"0" }}</div>
+                    <div class="stats-label">На рассмотрении</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stats-card">
+                    <div class="stats-number">{{ viewed_count|default:"0" }}</div>
+                    <div class="stats-label">Просмотрено</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stats-card">
+                    <div class="stats-number">{{ invited_count|default:"0" }}</div>
+                    <div class="stats-label">Приглашены</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stats-card">
+                    <div class="stats-number">{{ rejected_count|default:"0" }}</div>
+                    <div class="stats-label">Отклонены</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stats-card">
+                    <div class="stats-number">{{ accepted_count|default:"0" }}</div>
+                    <div class="stats-label">Приняты</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Список откликов -->
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Список откликов</h5>
+                    <div class="text-muted">
+                        Отсортировано по дате
+                    </div>
+                </div>
+
+                {% if responses %}
+                    {% for response in responses %}
+                    <div class="response-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-1">
+                                <div class="user-avatar">
+                                    {{ response.user.username|first|upper }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <h6 class="mb-1">
+                                    <a href="{% url 'user_profile' response.user.id %}" class="text-decoration-none">
+                                        {{ response.user.get_full_name|default:response.user.username }}
+                                    </a>
+                                </h6>
+                                <p class="text-muted small mb-1">
+                                    <i class="bi bi-envelope me-1"></i>{{ response.user.email }}
+                                </p>
+                                <p class="text-muted small mb-0">
+                                    <i class="bi bi-calendar me-1"></i>
+                                    {{ response.created_at|date:"d.m.Y H:i" }}
+                                </p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <span class="status-badge bg-{{ response.get_status_color }}">
+                                        {{ response.get_status_display }}
+                                    </span>
+                                    {% if response.recruiter_status %}
+                                    <span class="status-badge bg-{{ response.get_recruiter_status_color }} ms-1">
+                                        {{ response.get_recruiter_status_display }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                {% if response.cover_letter %}
+                                <div class="cover-letter-preview">
+                                    <small class="text-muted">{{ response.cover_letter|truncatechars:150 }}</small>
+                                </div>
+                                {% else %}
+                                <small class="text-muted">Сопроводительное письмо не указано</small>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="{% url 'candidate_detail' response.id %}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>Просмотр
+                                    </a>
+
+                                    <!-- Форма изменения статуса -->
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                                type="button" data-bs-toggle="dropdown">
+                                            <i class="bi bi-pencil me-1"></i>Статус
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><h6 class="dropdown-header">Изменить статус</h6></li>
+                                            {% for status_key, status_name in response.STATUS_CHOICES %}
+                                            <li>
+                                                <form method="post" action="{% url 'update_response_status' response.id %}"
+                                                      style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="status" value="{{ status_key }}">
+                                                    <button type="submit" class="dropdown-item">
+                                                        {{ status_name }}
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="card">
+                        <div class="card-body text-center py-5">
+                            <i class="bi bi-envelope-x display-1 text-muted mb-3"></i>
+                            <h4 class="text-muted mb-3">Откликов пока нет</h4>
+                            <p class="text-muted mb-4">
+                                На эту вакансию еще никто не откликнулся
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Подтверждение изменения статуса
+    const statusForms = document.querySelectorAll('form[action*="update_response_status"]');
+    statusForms.forEach(form => {
+        const button = form.querySelector('button[type="submit"]');
+        if (button) {
+            button.addEventListener('click', function(e) {
+                if (!confirm('Вы уверены, что хотите изменить статус отклика?')) {
+                    e.preventDefault();
+                }
+            });
+        }
+    });
+
+    // Просмотр полного сопроводительного письма
+    document.querySelectorAll('.cover-letter-preview').forEach(preview => {
+        preview.addEventListener('click', function() {
+            const textElement = this.querySelector('small');
+            if (textElement && textElement.textContent.includes('...')) {
+                const responseId = this.closest('.response-card').querySelector('a[href*="candidate_detail"]')?.href?.match(/\d+/)?.[0];
+                if (responseId) {
+                    // Можно сделать AJAX запрос для получения полного текста
+                    // Или просто показать alert с обрезанным текстом
+                    const fullText = textElement.textContent;
+                    alert('Сопроводительное письмо:\n\n' + fullText.replace(/\.\.\.$/, ''));
+                }
+            }
+        });
+    });
+
+    // Показать превью как кликабельный элемент
+    document.querySelectorAll('.cover-letter-preview').forEach(preview => {
+        preview.style.cursor = 'pointer';
+        preview.title = 'Кликните для просмотра полного текста';
+    });
+});
+</script>
+
+{% block extra_css %}
+<style>
+    .bg-info { background-color: #17a2b8 !important; color: white !important; }
+    .bg-primary { background-color: #007bff !important; color: white !important; }
+    .bg-warning { background-color: #ffc107 !important; color: black !important; }
+    .bg-success { background-color: #28a745 !important; color: white !important; }
+    .bg-danger { background-color: #dc3545 !important; color: white !important; }
+    .bg-secondary { background-color: #6c757d !important; color: white !important; }
+
+    /* Цвета для статусов */
+    .bg-pending { background-color: #ffc107 !important; color: black !important; }
+    .bg-viewed { background-color: #17a2b8 !important; color: white !important; }
+    .bg-invited { background-color: #28a745 !important; color: white !important; }
+    .bg-rejected { background-color: #dc3545 !important; color: white !important; }
+    .bg-accepted { background-color: #20c997 !important; color: white !important; }
+</style>
+{% endblock %}
+
+{% endblock %}

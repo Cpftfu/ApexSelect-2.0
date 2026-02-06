@@ -248,7 +248,16 @@ class VacancyResponse(models.Model):
 
 
 class VacancyResponse(models.Model):
-    # Добавим новые статусы для рекрутера
+    # Статусы отклика для пользователя
+    STATUS_CHOICES = [
+        ('pending', _('На рассмотрении')),
+        ('viewed', _('Просмотрено')),
+        ('invited', _('Приглашение на собеседование')),
+        ('rejected', _('Отказ')),
+        ('accepted', _('Принято')),
+    ]
+
+    # Статусы для рекрутера
     RECRUITER_STATUS_CHOICES = [
         ('new', _('Новый')),
         ('screening', _('Скрининг')),
@@ -281,7 +290,7 @@ class VacancyResponse(models.Model):
     status = models.CharField(
         _('Статус отклика'),
         max_length=20,
-        choices=VacancyResponse.STATUS_CHOICES,
+        choices=STATUS_CHOICES,
         default='pending'
     )
     recruiter_status = models.CharField(

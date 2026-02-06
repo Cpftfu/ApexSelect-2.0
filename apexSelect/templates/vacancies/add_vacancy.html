@@ -3,223 +3,619 @@
 {% block title %}{{ title }} - ApexSelect{% endblock %}
 
 {% block content %}
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+<style>
+    .vacancy-form-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+        color: white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        margin-bottom: 20px;
+        transition: transform 0.3s;
+        border: none;
+    }
+
+    .form-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+        color: white;
+        border: none;
+        padding: 20px 25px;
+        border-radius: 15px 15px 0 0 !important;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .form-control, .form-select, .form-textarea {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s;
+        background: #f8f9fa;
+    }
+
+    .form-control:focus, .form-select:focus, .form-textarea:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        background: white;
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        margin-top: 0.3em;
+        border: 2px solid #dee2e6;
+    }
+
+    .form-check-input:checked {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+
+    .form-check-input:focus {
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s;
+        min-width: 200px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+        background: linear-gradient(135deg, #2980b9 0%, #27ae60 100%);
+    }
+
+    .btn-cancel {
+        background: white;
+        border: 2px solid #666;
+        border-radius: 10px;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #666;
+        transition: all 0.3s;
+        min-width: 150px;
+    }
+
+    .btn-cancel:hover {
+        background: #666;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .tips-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-top: 30px;
+        border-left: 4px solid #3498db;
+    }
+
+    .tips-card h5 {
+        color: #3498db;
+        margin-bottom: 15px;
+    }
+
+    .tips-card ul {
+        margin: 0;
+        padding-left: 20px;
+        color: #555;
+    }
+
+    .tips-card li {
+        margin-bottom: 10px;
+        line-height: 1.5;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .asteriskField {
+        color: #e74c3c;
+        font-weight: bold;
+    }
+
+    .required-field {
+        border-left: 3px solid #3498db;
+        padding-left: 10px;
+    }
+
+    .field-icon {
+        color: #3498db;
+        margin-right: 8px;
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+        .vacancy-form-container {
+            padding: 20px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .btn-submit, .btn-cancel {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .form-header {
+            padding: 20px;
+        }
+    }
+
+    /* Стили для полей зарплаты */
+    .salary-fields {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .salary-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .salary-divider {
+        color: #666;
+        font-weight: 500;
+    }
+
+    /* Стили для чекбоксов опций */
+    .options-row {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    .form-check {
+        padding-left: 2.5em;
+        margin-bottom: 15px;
+    }
+
+    .form-check-label {
+        font-weight: 500;
+        color: #333;
+    }
+</style>
+
+<div class="vacancy-form-container">
     <div class="container">
-        <a class="navbar-brand" href="{% url 'home' %}">
-            <i class="bi bi-briefcase"></i> ApexSelect
-        </a>
-        <div class="navbar-nav ms-auto">
-            <a class="nav-item nav-link" href="{% url 'vacancy_list' %}">
-                <i class="bi bi-arrow-left"></i> К списку вакансий
-            </a>
-            <span class="nav-item nav-link">
-                <i class="bi bi-person-circle"></i> {{ user.username }}
-            </span>
-            <a class="nav-item nav-link" href="{% url 'logout' %}">
-                <i class="bi bi-box-arrow-right"></i> Выйти
-            </a>
-        </div>
-    </div>
-</nav>
-
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-10 col-lg-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">
-                        <i class="bi bi-file-earmark-plus"></i> {{ title }}
-                    </h2>
-                </div>
-                <div class="card-body">
-                    <form method="post" id="vacancyForm">
-                        {% csrf_token %}
-
-                        <!-- Основная информация -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Основная информация</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        {{ form.title|as_crispy_field }}
-                                    </div>
-                                    <div class="col-md-6">
-                                        {{ form.company|as_crispy_field }}
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        {{ form.location|as_crispy_field }}
-                                    </div>
-                                    <div class="col-md-6">
-                                        {{ form.status|as_crispy_field }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Описание -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="bi bi-card-text"></i> Описание вакансии</h5>
-                            </div>
-                            <div class="card-body">
-                                {{ form.short_description|as_crispy_field }}
-                                {{ form.full_description|as_crispy_field }}
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        {{ form.requirements|as_crispy_field }}
-                                    </div>
-                                    <div class="col-md-6">
-                                        {{ form.responsibilities|as_crispy_field }}
-                                    </div>
-                                </div>
-                                {{ form.benefits|as_crispy_field }}
-                            </div>
-                        </div>
-
-                        <!-- Детали -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="bi bi-gear"></i> Детали вакансии</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        {{ form.salary_min|as_crispy_field }}
-                                    </div>
-                                    <div class="col-md-3">
-                                        {{ form.salary_max|as_crispy_field }}
-                                    </div>
-                                    <div class="col-md-3">
-                                        {{ form.currency|as_crispy_field }}
-                                    </div>
-                                    <div class="col-md-3">
-                                        {{ form.technologies|as_crispy_field }}
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        {{ form.employment_type|as_crispy_field }}
-                                    </div>
-                                    <div class="col-md-6">
-                                        {{ form.experience|as_crispy_field }}
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        {{ form.expires_at|as_crispy_field }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Дополнительные опции -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="bi bi-sliders"></i> Дополнительные опции</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        {{ form.is_featured|as_crispy_field }}
-                                    </div>
-                                    <div class="col-md-4">
-                                        {{ form.is_remote|as_crispy_field }}
-                                    </div>
-                                    <div class="col-md-4">
-                                        {{ form.is_relocation|as_crispy_field }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Кнопки -->
-                        <div class="d-flex justify-content-between mt-4">
-                            <a href="{% url 'vacancy_list' %}" class="btn btn-secondary">
-                                <i class="bi bi-x-circle"></i> Отмена
-                            </a>
-                            <button type="submit" class="btn btn-success">
+        <!-- Шапка формы -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="form-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="h2 mb-2">
+                                <i class="bi bi-file-earmark-plus me-2"></i>{{ title }}
+                            </h1>
+                            <p class="mb-0 opacity-90">
                                 {% if vacancy %}
-                                    <i class="bi bi-check-circle"></i> Обновить вакансию
+                                    Редактирование вакансии "{{ vacancy.title }}"
                                 {% else %}
-                                    <i class="bi bi-plus-circle"></i> Создать вакансию
+                                    Создание новой вакансии
                                 {% endif %}
-                            </button>
+                            </p>
                         </div>
-                    </form>
+                        <div class="col-md-4 text-end">
+                            <a href="{% url 'vacancy_list' %}" class="btn btn-outline-light">
+                                <i class="bi bi-arrow-left me-1"></i>К списку вакансий
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Подсказки -->
-            <div class="alert alert-info mt-4">
-                <h5><i class="bi bi-lightbulb"></i> Подсказки:</h5>
-                <ul class="mb-0">
-                    <li>Поля помеченные * являются обязательными</li>
-                    <li>Используйте подробное описание для привлечения кандидатов</li>
-                    <li>Указывайте реальные требования к кандидатам</li>
-                    <li>Технологии указывайте через запятую (Python, Django, PostgreSQL)</li>
-                </ul>
+        <!-- Основная форма -->
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <form method="post" id="vacancyForm">
+                    {% csrf_token %}
+
+                    <!-- Карточка 1: Основная информация -->
+                    <div class="form-card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Основная информация</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="bi bi-card-heading field-icon"></i>Должность *
+                                        </label>
+                                        {{ form.title }}
+                                        <small class="text-muted">Название вакансии (например: Python разработчик)</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="bi bi-building field-icon"></i>Компания *
+                                        </label>
+                                        {{ form.company }}
+                                        <small class="text-muted">Название вашей компании</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="bi bi-geo-alt field-icon"></i>Локация *
+                                        </label>
+                                        {{ form.location }}
+                                        <small class="text-muted">Город или страна</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="bi bi-eye field-icon"></i>Статус
+                                        </label>
+                                        {{ form.status }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Карточка 2: Описание вакансии -->
+                    <div class="form-card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-card-text me-2"></i>Описание вакансии</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="bi bi-chat-left-text field-icon"></i>Краткое описание *
+                                </label>
+                                {{ form.short_description }}
+                                <small class="text-muted">Краткое описание (отображается в списках)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="bi bi-file-text field-icon"></i>Полное описание *
+                                </label>
+                                {{ form.full_description }}
+                                <small class="text-muted">Подробное описание вакансии</small>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="bi bi-list-check field-icon"></i>Требования
+                                        </label>
+                                        {{ form.requirements }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="bi bi-list-task field-icon"></i>Обязанности
+                                        </label>
+                                        {{ form.responsibilities }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="bi bi-gift field-icon"></i>Преимущества
+                                </label>
+                                {{ form.benefits }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Карточка 3: Детали вакансии -->
+                    <div class="form-card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Детали вакансии</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="salary-fields">
+                                <label class="form-label mb-3">
+                                    <i class="bi bi-cash-coin field-icon"></i>Зарплата
+                                </label>
+                                <div class="salary-row">
+                                    {{ form.salary_min }}
+                                    <span class="salary-divider">-</span>
+                                    {{ form.salary_max }}
+                                    {{ form.currency }}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="bi bi-briefcase field-icon"></i>Тип занятости
+                                        </label>
+                                        {{ form.employment_type }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="bi bi-graph-up field-icon"></i>Опыт работы
+                                        </label>
+                                        {{ form.experience }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="bi bi-tags field-icon"></i>Технологии
+                                        </label>
+                                        {{ form.technologies }}
+                                        <small class="text-muted">Указывайте через запятую (Python, Django, PostgreSQL)</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="bi bi-calendar-x field-icon"></i>Срок действия
+                                        </label>
+                                        {{ form.expires_at }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Карточка 4: Дополнительные опции -->
+                    <div class="form-card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-sliders me-2"></i>Дополнительные опции</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="options-row">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            {{ form.is_featured }}
+                                            <label class="form-check-label" for="{{ form.is_featured.id_for_label }}">
+                                                Особенная вакансия
+                                            </label>
+                                            <small class="text-muted d-block mt-1">Выделить в списке вакансий</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            {{ form.is_remote }}
+                                            <label class="form-check-label" for="{{ form.is_remote.id_for_label }}">
+                                                Удаленная работа
+                                            </label>
+                                            <small class="text-muted d-block mt-1">Возможность работать удаленно</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            {{ form.is_relocation }}
+                                            <label class="form-check-label" for="{{ form.is_relocation.id_for_label }}">
+                                                Релокация
+                                            </label>
+                                            <small class="text-muted d-block mt-1">Помощь с переездом</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопки отправки -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn-cancel" onclick="window.history.back()">
+                                    <i class="bi bi-x-circle me-1"></i>Отмена
+                                </button>
+                                <button type="submit" class="btn-submit">
+                                    {% if vacancy %}
+                                        <i class="bi bi-check-circle me-1"></i>Обновить вакансию
+                                    {% else %}
+                                        <i class="bi bi-plus-circle me-1"></i>Создать вакансию
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Подсказки -->
+                <div class="tips-card">
+                    <h5><i class="bi bi-lightbulb me-2"></i>Полезные советы:</h5>
+                    <ul>
+                        <li><strong>Поля помеченные *</strong> обязательны для заполнения</li>
+                        <li><strong>Краткое описание</strong> должно привлекать внимание кандидатов</li>
+                        <li><strong>Технологии</strong> указывайте через запятую для удобного поиска</li>
+                        <li><strong>Требования и обязанности</strong> должны быть реалистичными</li>
+                        <li><strong>Особенные вакансии</strong> выделяются в общем списке</li>
+                        <li><strong>Срок действия</strong> помогает автоматически закрывать старые вакансии</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-/* Стили для чекбоксов */
-.form-check-input {
-    margin-top: 0.3em;
-}
-
-/* Стили для textarea */
-textarea {
-    resize: vertical;
-    min-height: 100px;
-}
-
-/* Стили для обязательных полей */
-.asteriskField {
-    color: #dc3545;
-}
-
-/* Стили для карточек */
-.card {
-    border: 1px solid #e0e0e0;
-}
-
-.card-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #e0e0e0;
-}
-</style>
-
-{% block extra_js %}
 <script>
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
     // Автозаполнение зарплаты до при вводе зарплаты от
-    $('#id_salary_min').on('input', function() {
-        const minValue = $(this).val();
-        const maxField = $('#id_salary_max');
-        if (minValue && !maxField.val()) {
-            maxField.val(parseInt(minValue) * 2);
-        }
-    });
+    const salaryMin = document.getElementById('id_salary_min');
+    const salaryMax = document.getElementById('id_salary_max');
 
-    // Форматирование даты для поля expires_at
-    const expiresField = $('#id_expires_at');
-    if (!expiresField.val()) {
-        // Устанавливаем дату на 30 дней вперед по умолчанию
+    if (salaryMin && salaryMax) {
+        salaryMin.addEventListener('input', function() {
+            const minValue = parseInt(this.value);
+            if (!isNaN(minValue) && minValue > 0 && !salaryMax.value) {
+                salaryMax.value = minValue * 2;
+            }
+        });
+    }
+
+    // Установка даты по умолчанию для срока действия
+    const expiresAt = document.getElementById('id_expires_at');
+    if (expiresAt && !expiresAt.value) {
         const today = new Date();
         today.setDate(today.getDate() + 30);
         const formattedDate = today.toISOString().slice(0, 16);
-        expiresField.val(formattedDate);
+        expiresAt.value = formattedDate;
     }
 
-    // Подсветка обязательных полей
-    $('.requiredField').addClass('required-field');
+    // Добавление иконок к обязательным полям
+    const requiredFields = document.querySelectorAll('.requiredField');
+    requiredFields.forEach(field => {
+        const label = field.querySelector('label');
+        if (label) {
+            const asterisk = document.createElement('span');
+            asterisk.className = 'asteriskField';
+            asterisk.textContent = ' *';
+            label.appendChild(asterisk);
+        }
+    });
+
+    // Подсветка полей при фокусе
+    const formControls = document.querySelectorAll('.form-control, .form-select, textarea');
+    formControls.forEach(control => {
+        control.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused-field');
+        });
+
+        control.addEventListener('blur', function() {
+            this.parentElement.classList.remove('focused-field');
+        });
+    });
+
+    // Валидация формы перед отправкой
+    const form = document.getElementById('vacancyForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const titleField = document.getElementById('id_title');
+            const companyField = document.getElementById('id_company');
+            const shortDescField = document.getElementById('id_short_description');
+
+            let hasError = false;
+
+            // Проверка обязательных полей
+            [titleField, companyField, shortDescField].forEach(field => {
+                if (field && !field.value.trim()) {
+                    field.style.borderColor = '#e74c3c';
+                    field.parentElement.classList.add('has-error');
+                    hasError = true;
+                } else if (field) {
+                    field.style.borderColor = '';
+                    field.parentElement.classList.remove('has-error');
+                }
+            });
+
+            if (hasError) {
+                e.preventDefault();
+                alert('Пожалуйста, заполните все обязательные поля (помеченные *)');
+                return false;
+            }
+        });
+    }
+
+    // Динамическое обновление предпросмотра зарплаты
+    const salaryFields = [salaryMin, salaryMax];
+    const currencySelect = document.getElementById('id_currency');
+
+    function updateSalaryPreview() {
+        const min = salaryMin?.value ? parseInt(salaryMin.value) : null;
+        const max = salaryMax?.value ? parseInt(salaryMax.value) : null;
+        const currency = currencySelect?.value || 'RUB';
+
+        let preview = '';
+        if (min && max) {
+            preview = `${min.toLocaleString()} - ${max.toLocaleString()} ${currency}`;
+        } else if (min) {
+            preview = `от ${min.toLocaleString()} ${currency}`;
+        } else if (max) {
+            preview = `до ${max.toLocaleString()} ${currency}`;
+        }
+
+        // Можно добавить отображение превью где-нибудь на странице
+        // console.log('Salary preview:', preview);
+    }
+
+    salaryFields.forEach(field => {
+        if (field) field.addEventListener('input', updateSalaryPreview);
+    });
+    if (currencySelect) currencySelect.addEventListener('change', updateSalaryPreview);
 });
+
+// Стили для полей с ошибками
+const style = document.createElement('style');
+style.textContent = `
+    .has-error .form-control,
+    .has-error .form-select {
+        border-color: #e74c3c !important;
+        background-color: #ffeaea;
+    }
+
+    .has-error label {
+        color: #e74c3c;
+    }
+
+    .focused-field .form-control,
+    .focused-field .form-select {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+`;
+document.head.appendChild(style);
 </script>
-{% endblock %}
+
 {% endblock %}

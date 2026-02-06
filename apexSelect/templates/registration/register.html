@@ -3,38 +3,218 @@
 {% block title %}Регистрация - ApexSelect{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center align-items-center min-vh-75">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white text-center">
-                    <h3 class="mb-0">
-                        <i class="bi bi-person-plus"></i> Регистрация
-                    </h3>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ form|crispy }}
+<style>
+    .register-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 40px 0;
+    }
 
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-success btn-lg">
-                                <i class="bi bi-person-plus"></i> Зарегистрироваться
-                            </button>
+    .register-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        transition: transform 0.3s;
+    }
+
+    .register-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .register-header {
+        background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+        padding: 40px 30px;
+        text-align: center;
+        color: white;
+        position: relative;
+    }
+
+    .register-logo {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        display: inline-block;
+    }
+
+    .register-body {
+        padding: 40px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .btn-register {
+        background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s;
+    }
+
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    .requirements {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 20px;
+        border-left: 4px solid #3498db;
+    }
+
+    .requirements h6 {
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .requirements ul {
+        margin: 0;
+        padding-left: 20px;
+        color: #666;
+    }
+
+    .requirements li {
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+    }
+
+    .register-footer {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+
+    .register-link {
+        color: #3498db;
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .register-link:hover {
+        color: #2980b9;
+        text-decoration: underline;
+    }
+
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .form-row .form-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    @media (max-width: 768px) {
+        .register-container {
+            padding: 20px;
+        }
+
+        .register-body {
+            padding: 30px 20px;
+        }
+
+        .register-header {
+            padding: 30px 20px;
+        }
+
+        .form-row .form-group {
+            min-width: 100%;
+        }
+    }
+</style>
+
+<div class="register-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7">
+                <div class="register-card">
+                    <div class="register-header">
+                        <div class="register-logo">
+                            <i class="bi bi-person-plus"></i>
                         </div>
+                        <h3 class="mb-2">Регистрация в ApexSelect</h3>
+                        <p class="mb-0 opacity-90">Создайте новый аккаунт</p>
+                    </div>
 
-                        <div class="text-center mt-3">
-                            <p class="mb-0">
+                    <div class="register-body">
+                        <form method="post">
+                            {% csrf_token %}
+
+                            <div class="form-row">
+                                {% for field in form %}
+                                <div class="form-group">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Требования к паролю -->
+                            <div class="requirements">
+                                <h6><i class="bi bi-shield-check me-2"></i>Требования к паролю:</h6>
+                                <ul>
+                                    <li>Не менее 8 символов</li>
+                                    <li>Содержит буквы и цифры</li>
+                                    <li>Не должен быть слишком простым</li>
+                                </ul>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-register">
+                                    <i class="bi bi-person-plus me-2"></i> Зарегистрироваться
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="register-footer">
+                            <p class="mb-2">
                                 Уже есть аккаунт?
-                                <a href="{% url 'login' %}" class="text-decoration-none">
-                                    Войти
+                                <a href="{% url 'login' %}" class="register-link">
+                                    Войти в систему
                                 </a>
                             </p>
+                            <p class="small text-muted mb-0">
+                                Регистрируясь, вы соглашаетесь с нашими
+                                <a href="#" class="register-link">Условиями использования</a> и
+                                <a href="#" class="register-link">Политикой конфиденциальности</a>
+                            </p>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Валидация пароля в реальном времени
+    const passwordField = document.querySelector('#id_password1');
+    if (passwordField) {
+        passwordField.addEventListener('input', function() {
+            const password = this.value;
+            const requirements = document.querySelector('.requirements');
+
+            if (password.length > 0) {
+                requirements.style.display = 'block';
+            } else {
+                requirements.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

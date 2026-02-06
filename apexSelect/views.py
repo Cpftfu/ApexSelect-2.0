@@ -301,13 +301,38 @@ def vacancy_responses_view(request, pk):
     vacancy = get_object_or_404(Vacancy, pk=pk)
     responses = VacancyResponse.objects.filter(vacancy=vacancy).select_related('user')
 
-    status_counts = responses.values('status').annotate(count=Count('id'))
+    # Правильно подсчитываем статистику
+    total_count = responses.count()
+    pending_count = responses.filter(status='pending').count()
+    viewed_count = responses.filter(status='viewed').count()
+    invited_count = responses.filter(status='invited').count()
+    rejected_count = responses.filter(status='rejected').count()
+    accepted_count = responses.filter(status='accepted').count()
 
-    return render(request, 'vacancies/vacancy_responses.html', {
+    # Также получим отфильтрованные кверисеты для использования в шаблоне
+    pending_responses = responses.filter(status='pending')
+    viewed_responses = responses.filter(status='viewed')
+    invited_responses = responses.filter(status='invited')
+    rejected_responses = responses.filter(status='rejected')
+    accepted_responses = responses.filter(status='accepted')
+
+    context = {
         'vacancy': vacancy,
         'responses': responses,
-        'status_counts': status_counts,
-    })
+        'total_count': total_count,
+        'pending_count': pending_count,
+        'viewed_count': viewed_count,
+        'invited_count': invited_count,
+        'rejected_count': rejected_count,
+        'accepted_count': accepted_count,
+        'pending_responses': pending_responses,
+        'viewed_responses': viewed_responses,
+        'invited_responses': invited_responses,
+        'rejected_responses': rejected_responses,
+        'accepted_responses': accepted_responses,
+    }
+
+    return render(request, 'vacancies/vacancy_responses.html', context)
 
 
 # Список вакансий для админов
