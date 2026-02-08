@@ -56,6 +56,12 @@ def home_view(request):
         'experience', flat=True
     ).distinct()
 
+    # Добавляем статистику
+    total_vacancies = vacancies.count()
+    remote_count = vacancies.filter(is_remote=True).count()
+    # Получаем количество уникальных компаний
+    companies_count = vacancies.values('company').distinct().count()
+
     return render(request, 'home.html', {
         'vacancies': vacancies,
         'is_admin': request.user.is_staff or request.user.is_superuser,
@@ -66,9 +72,10 @@ def home_view(request):
         'is_remote_filter': is_remote,
         'employment_types': employment_types,
         'experience_levels': experience_levels,
-        'total_vacancies': vacancies.count(),
+        'total_vacancies': total_vacancies,
+        'remote_count': remote_count,
+        'companies_count': companies_count,
     })
-
 
 # Страница добавления вакансии
 @login_required

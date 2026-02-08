@@ -369,11 +369,7 @@
                                 <div class="stat-icon">
                                     <i class="bi bi-laptop"></i>
                                 </div>
-                                <div class="stat-number">
-                                    {% with remote_count=vacancies|filter_by_remote|length %}
-                                        {{ remote_count|default:"0" }}
-                                    {% endwith %}
-                                </div>
+                                <div class="stat-number">{{ remote_count|default:"0" }}</div>
                                 <div class="stat-label">Удаленных позиций</div>
                             </div>
                         </div>
@@ -391,11 +387,7 @@
                                 <div class="stat-icon">
                                     <i class="bi bi-building"></i>
                                 </div>
-                                <div class="stat-number">
-                                    {% with companies=vacancies|values_list:'company'|distinct|length %}
-                                        {{ companies|default:"10" }}+
-                                    {% endwith %}
-                                </div>
+                                <div class="stat-number">{{ companies_count|default:"10" }}+</div>
                                 <div class="stat-label">Компаний</div>
                             </div>
                         </div>
