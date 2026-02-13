@@ -597,7 +597,6 @@
         {% endif %}
     </div>
 </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Анимация появления карточек
@@ -613,7 +612,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, index * 100);
     });
 
-    // Автоотправка формы при изменении фильтров
     const selects = document.querySelectorAll('select[name="employment_type"], select[name="experience"]');
     selects.forEach(select => {
         select.addEventListener('change', function() {
@@ -640,7 +638,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Эффект параллакса для герой-секции
     const heroSection = document.querySelector('.hero-section');
     if (heroSection) {
         window.addEventListener('scroll', function() {

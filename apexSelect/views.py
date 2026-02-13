@@ -7,7 +7,12 @@ from django.db.models import Q, Count
 from django.utils.timezone import now
 from .forms import RegistrationForm, LoginForm, VacancyForm, VacancyResponseForm, RecruiterResponseForm
 from .models import Vacancy, VacancyResponse, CustomUser
-
+from .forms import (
+    RegistrationForm, LoginForm, VacancyForm,
+    VacancyResponseForm, RecruiterResponseForm,
+    UserProfileForm,
+    ChangePasswordForm
+)
 
 # Проверка является ли пользователь администратором/рекрутером
 def is_admin(user):
@@ -259,6 +264,80 @@ def my_responses_view(request):
         'rejected_count': rejected_count,
         'accepted_count': accepted_count,
     })
+
+
+@login_required
+def my_profile_view(request):
+    """Просмотр и редактирование своего профиля"""
+    user = request.user
+
+    # Статистика пользователя
+    my_responses = VacancyResponse.objects.filter(user=user)
+    responses_count = my_responses.count()
+    pending_count = my_responses.filter(status='pending').count()
+    viewed_count = my_responses.filter(status='viewed').count()
+    invited_count = my_responses.filter(status='invited').count()
+
+    # Получаем последние 5 откликов
+    recent_responses = my_responses.select_related('vacancy').order_by('-created_at')[:5]
+
+    context = {
+        'profile_user': user,
+        'responses_count': responses_count,
+        'pending_count': pending_count,
+        'viewed_count': viewed_count,
+        'invited_count': invited_count,
+        'recent_responses': recent_responses,
+    }
+
+    return render(request, 'profile/my_profile.html', context)
+
+
+# Добавьте эти функции после my_profile_view
+
+@login_required
+def edit_profile_view(request):
+    """Редактирование профиля"""
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Профиль успешно обновлен!')
+            return redirect('my_profile')
+        else:
+            messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
+    else:
+        form = UserProfileForm(instance=request.user)
+
+    return render(request, 'profile/edit_profile.html', {'form': form})
+
+
+@login_required
+def change_password_view(request):
+    """Смена пароля"""
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            old_password = form.cleaned_data.get('old_password')
+
+            # Проверяем старый пароль
+            if not user.check_password(old_password):
+                messages.error(request, 'Текущий пароль введен неверно.')
+                return redirect('change_password')
+
+            # Устанавливаем новый пароль
+            new_password = form.cleaned_data.get('new_password1')
+            user.set_password(new_password)
+            user.save()
+
+            # Перенаправляем на страницу входа с сообщением
+            messages.success(request, 'Пароль успешно изменен. Пожалуйста, войдите снова.')
+            return redirect('login')
+    else:
+        form = ChangePasswordForm()
+
+    return render(request, 'profile/change_password.html', {'form': form})
 
 
 # Удаление отклика

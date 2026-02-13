@@ -64,4 +64,10 @@ urlpatterns += [
              template_name='registration/password_reset_complete.html'
          ),
          name='password_reset_complete'),
+
+    path('profile/', views.my_profile_view, name='my_profile'),
+
+    path('profile/', views.my_profile_view, name='my_profile'),
+    path('profile/edit/', views.edit_profile_view, name='edit_profile'),
+    path('profile/change-password/', views.change_password_view, name='change_password'),
 ]

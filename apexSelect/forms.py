@@ -122,6 +122,7 @@ class RegistrationForm(UserCreationForm):
         </div>
         '''
 
+
 class LoginForm(AuthenticationForm):
     username = forms.CharField(
         widget=forms.TextInput(attrs={
@@ -164,6 +165,186 @@ class CustomUserChangeForm(UserChangeForm):
                 "изменить его с помощью <a href=\"../password/\">этой формы</a>."
             )
 
+
+# ============ НОВЫЕ ФОРМЫ ДЛЯ ПРОФИЛЯ ============
+
+class UserProfileForm(forms.ModelForm):
+    """Форма для редактирования профиля пользователя"""
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'username']
+        widgets = {
+            'first_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введите ваше имя'
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введите вашу фамилию'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введите ваш email'
+            }),
+            'username': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введите имя пользователя'
+            }),
+        }
+        labels = {
+            'first_name': 'Имя',
+            'last_name': 'Фамилия',
+            'email': 'Электронная почта',
+            'username': 'Имя пользователя',
+        }
+        help_texts = {
+            'username': 'Обязательное поле. Не более 150 символов. Только буквы, цифры и символы @/./+/-/_.',
+        }
+
+    def clean_email(self):
+        """Проверка уникальности email (исключая текущего пользователя)"""
+        email = self.cleaned_data.get('email')
+        if email and self.instance:
+            # Проверяем, есть ли другой пользователь с таким email
+            if User.objects.exclude(pk=self.instance.pk).filter(email=email).exists():
+                raise ValidationError("Пользователь с таким email уже существует.")
+        return email
+
+    def clean_username(self):
+        """Проверка уникальности username (исключая текущего пользователя)"""
+        username = self.cleaned_data.get('username')
+        if username and self.instance:
+            # Проверяем, есть ли другой пользователь с таким username
+            if User.objects.exclude(pk=self.instance.pk).filter(username=username).exists():
+                raise ValidationError("Пользователь с таким именем уже существует.")
+        return username
+
+
+class ChangePasswordForm(forms.Form):
+    """Форма для смены пароля"""
+
+    old_password = forms.CharField(
+        label='Текущий пароль',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Введите текущий пароль'
+        }),
+        error_messages={
+            'required': 'Пожалуйста, введите текущий пароль'
+        }
+    )
+
+    new_password1 = forms.CharField(
+        label='Новый пароль',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Введите новый пароль'
+        }),
+        help_text='''
+        <div class="password-requirements">
+            <p class="mb-1"><small>Требования к паролю:</small></p>
+            <ul class="small text-muted mb-0">
+                <li>Не менее 8 символов</li>
+                <li>Не должен быть слишком простым</li>
+                <li>Не должен состоять только из цифр</li>
+            </ul>
+        </div>
+        ''',
+        error_messages={
+            'required': 'Пожалуйста, введите новый пароль'
+        }
+    )
+
+    new_password2 = forms.CharField(
+        label='Подтверждение пароля',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Повторите новый пароль'
+        }),
+        help_text='Для подтверждения введите тот же пароль еще раз.',
+        error_messages={
+            'required': 'Пожалуйста, подтвердите новый пароль'
+        }
+    )
+
+    def clean_new_password2(self):
+        """Проверка совпадения паролей"""
+        password1 = self.cleaned_data.get('new_password1')
+        password2 = self.cleaned_data.get('new_password2')
+
+        if password1 and password2 and password1 != password2:
+            raise ValidationError("Пароли не совпадают.")
+
+        # Здесь можно добавить дополнительные проверки сложности пароля
+        if len(password1) < 8:
+            raise ValidationError("Пароль должен содержать не менее 8 символов.")
+
+        if password1.isdigit():
+            raise ValidationError("Пароль не может состоять только из цифр.")
+
+        return password2
+
+
+class AvatarUploadForm(forms.Form):
+    """Форма для загрузки аватарки (если планируете добавить)"""
+
+    avatar = forms.ImageField(
+        label='Аватар',
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/*'
+        }),
+        help_text='Загрузите изображение (JPEG, PNG, GIF)'
+    )
+
+    def clean_avatar(self):
+        avatar = self.cleaned_data.get('avatar')
+
+        if avatar:
+            # Проверка размера файла (макс 2MB)
+            if avatar.size > 2 * 1024 * 1024:
+                raise ValidationError("Размер файла не должен превышать 2MB.")
+
+            # Проверка типа файла
+            if not avatar.content_type.startswith('image/'):
+                raise ValidationError("Файл должен быть изображением.")
+
+        return avatar
+
+
+class NotificationSettingsForm(forms.Form):
+    """Форма для настроек уведомлений (если нужно)"""
+
+    email_notifications = forms.BooleanField(
+        label='Получать уведомления по email',
+        required=False,
+        initial=True,
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input'
+        })
+    )
+
+    response_notifications = forms.BooleanField(
+        label='Уведомлять о новых откликах',
+        required=False,
+        initial=True,
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input'
+        })
+    )
+
+    status_notifications = forms.BooleanField(
+        label='Уведомлять об изменении статуса отклика',
+        required=False,
+        initial=True,
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input'
+        })
+    )
+
+
+# ============ ОСТАЛЬНЫЕ ФОРМЫ ============
 
 class VacancyForm(forms.ModelForm):
     class Meta:

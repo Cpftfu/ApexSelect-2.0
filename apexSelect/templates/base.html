@@ -14,6 +14,9 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
         .navbar {
             box-shadow: 0 2px 4px rgba(0,0,0,.1);
@@ -37,6 +40,18 @@
             padding: 20px 0;
             background-color: #f8f9fa;
             border-top: 1px solid #dee2e6;
+        }
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            margin-right: 10px;
+        }
+        .dropdown-item:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        .dropdown-item.text-danger:hover {
+            background: #dc3545;
+            color: white !important;
         }
     </style>
 
@@ -77,12 +92,25 @@
                                data-bs-toggle="dropdown">
                                 <i class="bi bi-person-circle me-1"></i>{{ user.username }}
                             </a>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
-                                    <a class="dropdown-item" href="#">
-                                        <i class="bi bi-person me-2"></i>Профиль
+                                    <a class="dropdown-item" href="{% url 'my_profile' %}">
+                                        <i class="bi bi-person me-2"></i>Мой профиль
                                     </a>
                                 </li>
+
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'edit_profile' %}">
+                                        <i class="bi bi-pencil-square me-2"></i>Редактировать
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'change_password' %}">
+                                        <i class="bi bi-key me-2"></i>Сменить пароль
+                                    </a>
+                                </li>
+
                                 {% if user.is_staff or user.is_superuser %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
@@ -90,10 +118,21 @@
                                         <i class="bi bi-list-task me-2"></i>Управление вакансиями
                                     </a>
                                 </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'recruiter_dashboard' %}">
+                                        <i class="bi bi-speedometer2 me-2"></i>Панель рекрутера
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'user_list' %}">
+                                        <i class="bi bi-people me-2"></i>Все пользователи
+                                    </a>
+                                </li>
                                 {% endif %}
+
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item" href="{% url 'logout' %}">
+                                    <a class="dropdown-item text-danger" href="{% url 'logout' %}">
                                         <i class="bi bi-box-arrow-right me-2"></i>Выйти
                                     </a>
                                 </li>
@@ -122,10 +161,10 @@
         {% for message in messages %}
             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
                 <i class="bi
-                    {% if message.tags == 'success' %}bi-check-circle
-                    {% elif message.tags == 'error' or message.tags == 'danger' %}bi-x-circle
-                    {% elif message.tags == 'warning' %}bi-exclamation-triangle
-                    {% else %}bi-info-circle{% endif %}
+                    {% if message.tags == 'success' %}bi-check-circle-fill
+                    {% elif message.tags == 'error' or message.tags == 'danger' %}bi-exclamation-triangle-fill
+                    {% elif message.tags == 'warning' %}bi-exclamation-triangle-fill
+                    {% else %}bi-info-circle-fill{% endif %}
                 "></i>
                 {{ message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -169,6 +208,14 @@
                     bsAlert.close();
                 });
             }, 5000);
+
+            // Подсветка активного пункта меню
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.nav-link, .dropdown-item').forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
         });
     </script>
 
